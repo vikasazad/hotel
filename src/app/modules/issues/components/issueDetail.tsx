@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Cleanliness from "./cleanliness";
-import Functionality from "./functionality";
-import Safetysecurity from "./safetysecurity";
-import Amenities from "./amenities";
-import Aesthetics from "./aesthetics";
-import Noise from "./noise";
-import Miscellaneous from "./miscellaneous";
+
 import { usePathname } from "next/navigation";
 
 const IssueDetail = () => {
