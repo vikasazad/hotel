@@ -60,15 +60,15 @@ export default function RoomDetail() {
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">
-                {BookingData.bookingDetails.roomType.toUpperCase()}
+                {BookingData?.bookingDetails?.roomType.toUpperCase()}
               </h2>
               <p className="text-gray-500 text-sm">
-                {BookingData.bookingDetails.description}
+                {BookingData?.bookingDetails?.description}
               </p>
             </div>
             <div className="bg-green-100 p-3 rounded-lg text-center px-4">
               <div className="text-2xl font-bold text-green-700">
-                {BookingData.bookingDetails.nights}
+                {BookingData?.bookingDetails?.nights}
               </div>
               <div className="text-sm text-green-600">nights</div>
             </div>
@@ -79,7 +79,7 @@ export default function RoomDetail() {
               <div className="text-sm text-gray-500">CHECK IN</div>
               <div className="font-medium">
                 {new Date(
-                  BookingData.bookingDetails.checkIn
+                  BookingData?.bookingDetails?.checkIn
                 ).toLocaleDateString("en-GB")}
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function RoomDetail() {
               <div className="text-sm text-gray-500">CHECK OUT</div>
               <div className="font-medium">
                 {new Date(
-                  BookingData.bookingDetails.checkOut
+                  BookingData?.bookingDetails?.checkOut
                 ).toLocaleDateString("en-GB")}
               </div>
             </div>
@@ -108,7 +108,7 @@ export default function RoomDetail() {
                     <div className="flex">
                       <Users className="h-4 w-4 mr-2 " />
                       <span className="text-black">
-                        {BookingData.bookingDetails.noOfGuests}
+                        {BookingData?.bookingDetails?.noOfGuests}
                       </span>
                     </div>
                   </div>
@@ -118,7 +118,7 @@ export default function RoomDetail() {
                     <span className="font-medium">Booking ID</span>
                   </div>
                   <span className="font-mono text-sm">
-                    {BookingData.bookingDetails.bookingId}
+                    {BookingData?.bookingDetails?.bookingId}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -126,7 +126,7 @@ export default function RoomDetail() {
                     <span className="font-medium">Inclusions</span>
                   </div>
                   <span className="font-mono text-sm text-right">
-                    {BookingData.bookingDetails.inclusions.join(", ")}
+                    {BookingData?.bookingDetails?.inclusions.join(", ")}
                   </span>
                 </div>
               </div>
@@ -150,32 +150,33 @@ export default function RoomDetail() {
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    {`Room (${BookingData.bookingDetails.nights} night × ${BookingData.bookingDetails.noOfGuests} guests)`}
+                    {`Room (${BookingData?.bookingDetails?.nights} night × ${BookingData?.bookingDetails?.noOfGuests} guests)`}
                   </span>
                   <span className="font-medium">
-                    ₹{BookingData.bookingDetails.payment.subtotal}
+                    ₹{BookingData?.bookingDetails?.payment?.subtotal}
                   </span>
                 </div>
-                {BookingData.bookingDetails.payment.gst.gstPercentage && (
+                {BookingData?.bookingDetails?.payment?.gst?.gstPercentage && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
-                      {`Tax (${BookingData.bookingDetails.payment.gst.gstPercentage}%)`}
+                      {`Tax (${BookingData?.bookingDetails?.payment?.gst?.gstPercentage}%)`}
                     </span>
                     <span className="font-medium">
-                      ₹{BookingData.bookingDetails.payment.gst.gstAmount}
+                      ₹{BookingData?.bookingDetails?.payment?.gst?.gstAmount}
                     </span>
                   </div>
                 )}
-                {BookingData.bookingDetails.payment.discount.type && (
+                {BookingData?.bookingDetails?.payment?.discount?.type && (
                   <div className="flex items-center justify-between text-green-600">
                     <span className="text-sm">
                       Coupon{" "}
                       <span className="text-black">
-                        ( {BookingData.bookingDetails.payment.discount.code} )
+                        ( {BookingData?.bookingDetails?.payment?.discount?.code}{" "}
+                        )
                       </span>
                     </span>
                     <span className="font-medium">
-                      -₹{BookingData.bookingDetails.payment?.discount?.amount}
+                      -₹{BookingData?.bookingDetails?.payment?.discount?.amount}
                     </span>
                   </div>
                 )}
@@ -187,13 +188,14 @@ export default function RoomDetail() {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-lg font-semibold">Total</span>
-                {BookingData.bookingDetails.payment.paymentStatus === "paid" ? (
+                {BookingData?.bookingDetails?.payment?.paymentStatus ===
+                "paid" ? (
                   <>
                     <Badge variant="outline" className="mx-2">
                       Paid
                     </Badge>
                     <Badge variant="outline" className="mx-2">
-                      {BookingData.bookingDetails.payment.mode}
+                      {BookingData?.bookingDetails?.payment?.mode}
                     </Badge>
                   </>
                 ) : (
@@ -203,7 +205,7 @@ export default function RoomDetail() {
                 )}
               </div>
               <span className="text-green-600 text-lg font-semibold">
-                ₹{BookingData.bookingDetails.payment.price}
+                ₹{BookingData?.bookingDetails?.payment?.price}
               </span>
             </div>
           </div>
