@@ -34,7 +34,7 @@ export default function RoomDetail() {
         <div className="relative">
           <Carousel className="w-full">
             <CarouselContent>
-              {BookingData.bookingDetails.images.map(
+              {BookingData?.bookingDetails?.images?.map(
                 (src: any, index: number) => (
                   <CarouselItem key={index}>
                     <div className="relative aspect-[2/1]">
