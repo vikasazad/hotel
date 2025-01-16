@@ -234,7 +234,7 @@ export async function add(email: string, newUser: any, field: string) {
   }
 }
 
-export async function getHotelData() {
+export async function getHotelData(phoneNumber: string) {
   try {
     const docRefMenu = doc(db, "vikumar.azad@gmail.com", "hotel");
     const docRefInfo = doc(db, "vikumar.azad@gmail.com", "info");
@@ -245,19 +245,33 @@ export async function getHotelData() {
     ]);
 
     if (docSnapMenu.exists() && docSnapInfo.exists()) {
+      const hotelData = docSnapMenu.data().live;
+      const infoData = docSnapInfo.data().hotel;
+
+      // Find the room with a customer whose phone matches the given phone number
+      const matchingRoom = hotelData.rooms.find(
+        (room: any) => room.bookingDetails?.customer?.phone === phoneNumber
+      );
+
       return {
-        hotel: docSnapMenu.data().live,
-        info: docSnapInfo.data().hotel,
+        hotel: matchingRoom || null,
+        info: infoData,
       };
     }
+
+    return {
+      hotel: false,
+      info: false,
+    };
   } catch (error) {
     console.error("Error fetching Firestore data:", error);
     return {
-      menu: false,
+      hotel: false,
       info: false,
     };
   }
 }
+
 export async function getCouponData() {
   try {
     const docRefInfo = doc(db, "vikumar.azad@gmail.com", "info");

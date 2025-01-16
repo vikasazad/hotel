@@ -1,6 +1,4 @@
 "use client";
-
-import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
@@ -15,14 +13,15 @@ import { Users, CreditCard, ArrowLeft, Phone, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 export default function RoomDetail() {
   const router = useRouter();
-  const images = [
-    "https://media.istockphoto.com/id/627892060/photo/hotel-room-suite-with-view.jpg?s=612x612&w=0&k=20&c=YBwxnGH3MkOLLpBKCvWAD8F__T-ypznRUJ_N13Zb1cU=",
-    "https://img.freepik.com/free-photo/luxury-classic-modern-bedroom-suite-hotel_105762-1787.jpg",
-    "https://t3.ftcdn.net/jpg/02/71/08/28/360_F_271082810_CtbTjpnOU3vx43ngAKqpCPUBx25udBrg.jpg",
-  ];
+  const BookingData: any = useSelector(
+    (state: RootState) => state.addBooking.bookingData
+  );
+  console.log("BookingData", BookingData);
 
   return (
     <div className="max-w-3xl mx-auto space-y-2 p-6 mb-[60px]">
@@ -35,18 +34,20 @@ export default function RoomDetail() {
         <div className="relative">
           <Carousel className="w-full">
             <CarouselContent>
-              {images.map((src, index) => (
-                <CarouselItem key={index}>
-                  <div className="relative aspect-[2/1]">
-                    <Image
-                      src={src}
-                      alt={`Room view ${index + 1}`}
-                      className="object-cover w-full h-full rounded-t-lg"
-                      fill
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
+              {BookingData.bookingDetails.images.map(
+                (src: any, index: number) => (
+                  <CarouselItem key={index}>
+                    <div className="relative aspect-[2/1]">
+                      <Image
+                        src={src}
+                        alt={`Room view ${index + 1}`}
+                        className="object-cover w-full h-full rounded-t-lg"
+                        fill
+                      />
+                    </div>
+                  </CarouselItem>
+                )
+              )}
             </CarouselContent>
             <CarouselPrevious className="left-4" />
             <CarouselNext className="right-4" />
@@ -58,13 +59,17 @@ export default function RoomDetail() {
         <CardHeader className="space-y-2 p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold">Hotel SunShine</h2>
+              <h2 className="text-2xl font-bold">
+                {BookingData.bookingDetails.roomType.toUpperCase()}
+              </h2>
               <p className="text-gray-500 text-sm">
-                Lorem ipsum dolor sit amet.
+                {BookingData.bookingDetails.description}
               </p>
             </div>
             <div className="bg-green-100 p-3 rounded-lg text-center px-4">
-              <div className="text-2xl font-bold text-green-700">3</div>
+              <div className="text-2xl font-bold text-green-700">
+                {BookingData.bookingDetails.nights}
+              </div>
               <div className="text-sm text-green-600">nights</div>
             </div>
           </div>
@@ -72,12 +77,20 @@ export default function RoomDetail() {
           <div className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg">
             <div>
               <div className="text-sm text-gray-500">CHECK IN</div>
-              <div className="font-medium">13.02.2024</div>
+              <div className="font-medium">
+                {new Date(
+                  BookingData.bookingDetails.checkIn
+                ).toLocaleDateString("en-GB")}
+              </div>
             </div>
             <div className="text-green-700">to</div>
             <div>
               <div className="text-sm text-gray-500">CHECK OUT</div>
-              <div className="font-medium">16.02.2024</div>
+              <div className="font-medium">
+                {new Date(
+                  BookingData.bookingDetails.checkOut
+                ).toLocaleDateString("en-GB")}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -94,7 +107,9 @@ export default function RoomDetail() {
                   <div className="text-sm text-muted-foreground">
                     <div className="flex">
                       <Users className="h-4 w-4 mr-2 " />
-                      <span className="text-black">2</span>
+                      <span className="text-black">
+                        {BookingData.bookingDetails.noOfGuests}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -102,7 +117,17 @@ export default function RoomDetail() {
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Booking ID</span>
                   </div>
-                  <span className="font-mono text-sm">HSS198791</span>
+                  <span className="font-mono text-sm">
+                    {BookingData.bookingDetails.bookingId}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center mr-4">
+                    <span className="font-medium">Inclusions</span>
+                  </div>
+                  <span className="font-mono text-sm text-right">
+                    {BookingData.bookingDetails.inclusions.join(", ")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -125,22 +150,61 @@ export default function RoomDetail() {
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    Room price for 1 night × 2 guests
+                    {`Room (${BookingData.bookingDetails.nights} night × ${BookingData.bookingDetails.noOfGuests} guests)`}
                   </span>
-                  <span className="font-medium">₹999</span>
+                  <span className="font-medium">
+                    ₹{BookingData.bookingDetails.payment.subtotal}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between text-green-600">
-                  <span className="text-sm">Coupon Discount</span>
-                  <span className="font-medium">-₹999</span>
-                </div>
+                {BookingData.bookingDetails.payment.gst.gstPercentage && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">
+                      {`Tax (${BookingData.bookingDetails.payment.gst.gstPercentage}%)`}
+                    </span>
+                    <span className="font-medium">
+                      ₹{BookingData.bookingDetails.payment.gst.gstAmount}
+                    </span>
+                  </div>
+                )}
+                {BookingData.bookingDetails.payment.discount.type && (
+                  <div className="flex items-center justify-between text-green-600">
+                    <span className="text-sm">
+                      Coupon{" "}
+                      <span className="text-black">
+                        ( {BookingData.bookingDetails.payment.discount.code} )
+                      </span>
+                    </span>
+                    <span className="font-medium">
+                      -₹{BookingData.bookingDetails.payment?.discount?.amount}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
             <Separator />
 
-            <div className="flex items-center justify-between">
-              <div className="text-lg font-semibold">Total amount paid</div>
-              <div className="text-lg font-semibold">₹999</div>
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-lg font-semibold">Total</span>
+                {BookingData.bookingDetails.payment.paymentStatus === "paid" ? (
+                  <>
+                    <Badge variant="outline" className="mx-2">
+                      Paid
+                    </Badge>
+                    <Badge variant="outline" className="mx-2">
+                      {BookingData.bookingDetails.payment.mode}
+                    </Badge>
+                  </>
+                ) : (
+                  <Badge variant="outline" className="mx-2">
+                    Pending
+                  </Badge>
+                )}
+              </div>
+              <span className="text-green-600 text-lg font-semibold">
+                ₹{BookingData.bookingDetails.payment.price}
+              </span>
             </div>
           </div>
         </CardContent>

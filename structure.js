@@ -1640,22 +1640,24 @@ const hotelData = {
           aggregatorLogo:
             "https://cdn.worldvectorlogo.com/logos/bookingcom-1.svg",
           bookingId: "RO:8966",
-          status: "reserved",
+          status: "occupied",
           attendant: "Shyam Mishra",
           bookingDate: "2024-09-29T10:00:00.000Z",
           checkIn: "2024-09-30T07:00:00.000Z",
           checkOut: "2024-10-02T07:00:00.000Z",
+          nights: "3",
           noOfGuests: "2",
           noOfRoom: "1",
-          inclusions: "taxes, wifi, breakfast",
+          inclusions: ["wifi", "breakfast"],
           specialRequirements: "Late check-out requested",
           payment: {
-            paymentStatus: "complete",
-            mode: "online",
-            paymentId: "TXN123456",
-            timeOfTransaction: "2024-09-29T10:00:00.000Z",
-            price: "30",
+            transctionId: "XUSie83",
+            paymentStatus: "pending",
+            mode: "room charge",
+            paymentId: "RO24092101",
+            price: "27",
             priceAfterDiscount: "27",
+            timeOfTransaction: "2024-10-02T07:00:00.000Z",
             gst: {
               gstAmount: "100",
               gstPercentage: "18%",
@@ -1665,9 +1667,9 @@ const hotelData = {
               sgstPercentage: "9%",
             },
             discount: {
-              type: "coupon",
-              amount: 3,
-              code: "SAVE10",
+              type: "none",
+              amount: 0,
+              code: "",
             },
           },
         },
@@ -1675,18 +1677,19 @@ const hotelData = {
           orders: [
             {
               orderId: "OR:123",
+              specialRequirement: "Make pina collada extra sour",
               items: [
                 {
                   itemId: "gac1",
                   itemName: "Pizza",
                   portionSize: "Large",
-                  price: 20,
+                  price: "20",
                 },
                 {
                   itemId: "mac1",
                   itemName: "Salad",
                   portionSize: "Small",
-                  price: 10,
+                  price: "10",
                 },
               ],
               attendant: "Alice Smith",
@@ -1717,11 +1720,45 @@ const hotelData = {
               },
             },
           ],
+          location: "T13",
+          attendant: "Sarah Johnson",
+          timeSeated: "2024-09-21T15:47:00.000Z",
+          timeLeft: "2024-09-26T04:47:00.000Z",
+          aggregator: "makeMyTrip",
+          aggregatorLogo:
+            "https://cdn.worldvectorlogo.com/logos/bookingcom-1.svg",
+          noOfGuests: "2",
+          capicity: "4",
+          status: "occupied",
+          payment: {
+            transctionId: "XUSie83",
+            paymentStatus: "pending",
+            mode: "room charge",
+            paymentId: "RO24092101",
+            price: "27",
+            priceAfterDiscount: "27",
+            timeOfTransaction: "2024-10-02T07:00:00.000Z",
+            gst: {
+              gstAmount: "100",
+              gstPercentage: "18%",
+              cgstAmount: "50",
+              cgstPercentage: "9%",
+              sgstAmount: "50",
+              sgstPercentage: "9%",
+            },
+            discount: {
+              type: "none",
+              amount: 0,
+              code: "",
+            },
+          },
         },
-        servicesUsed: {
-          massage: {
+        servicesUsed: [
+          {
             serviceId: "SE:123",
             serviceName: "Massage",
+            description:
+              "This is the sample description for testing purposes of this program",
             type: "massage",
             requestTime: "2024-09-25T08:47:00.000Z",
             startTime: "2024-09-25T11:47:00.000Z",
@@ -1752,7 +1789,7 @@ const hotelData = {
               },
             },
           },
-        },
+        ],
         issuesReported: {
           maintenance: {
             issueId: "IS:123",

@@ -15,21 +15,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, ClipboardList, Send } from "lucide-react";
+import { ArrowLeft, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getOnlineStaffFromFirestore, setOfflineRoom } from "../utils/issueApi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 export default function Cleanliness({ data }: { data: any }) {
-  console.log(data);
+  // console.log(data);
+  const BookingData: any = useSelector(
+    (state: RootState) => state.addBooking.bookingData
+  );
   const router = useRouter();
   const [selectedIssue, setSelectedIssue] = useState("");
   const [input, setInput] = useState("");
-  function handleSubmit() {
-    console.log({
+  async function handleSubmit() {
+    const _issue = {
       issue: data.id,
       subCategory: selectedIssue,
       description: input,
-    });
+      location: BookingData.bookingDetails.location,
+    };
+    console.log(_issue);
+
+    const attendant: any = await getOnlineStaffFromFirestore(
+      "vikumar.azad@gmail.com"
+    );
+    await setOfflineRoom(_issue, attendant);
   }
   return (
     <>
@@ -97,7 +110,6 @@ export default function Cleanliness({ data }: { data: any }) {
         {selectedIssue && (
           <CardFooter>
             <Button className="w-full" onClick={handleSubmit}>
-              <Send className="w-4 h-4 mr-2" />
               Submit Issue
             </Button>
           </CardFooter>

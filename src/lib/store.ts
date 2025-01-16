@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import searchReducer from "./features/searchSlice";
 import addToOrderReducer from "./features/addToOrderSlice";
+import addBookingReducer from "./features/bookingInfoSlice";
 import activeFooterItemReducer from "./features/activeFooterCategory";
 
 const store = () => {
@@ -8,6 +9,7 @@ const store = () => {
     reducer: {
       searchTerm: searchReducer,
       addToOrderData: addToOrderReducer,
+      addBooking: addBookingReducer,
       activeFooterItem: activeFooterItemReducer,
       // firebaseManagementData: firebaseManagementDataReducer,
       //     // firestoreMultipleData: firestoreMultipleDataReducer,
