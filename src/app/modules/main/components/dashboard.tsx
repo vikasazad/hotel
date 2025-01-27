@@ -127,7 +127,7 @@ const Dashboard = ({ hotel, info }: any) => {
         </CardHeader>
 
         <CardContent className="space-y-2 px-4 pb-4">
-          {hotel?.diningDetails.length > 0 &&
+          {hotel?.diningDetails?.orders?.length > 0 &&
             hotel?.diningDetails?.orders.map((service: any) => (
               <Accordion
                 type="single"
