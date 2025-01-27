@@ -106,7 +106,7 @@ const Dashboard = ({ hotel, info }: any) => {
             </div>
             <div className="text-green-700">to</div>
             <div>
-              <div className="text-sm text-gray-500">CHECK OUTT</div>
+              <div className="text-sm text-gray-500">CHECK OUT</div>
               <div className="font-medium">
                 {new Date(hotel?.bookingDetails?.checkOut).toLocaleDateString(
                   "en-GB"
