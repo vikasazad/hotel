@@ -46,7 +46,9 @@ const Dashboard = ({ hotel, info }: any) => {
       hotel?.bookingDetails?.customer?.phone
     ).then((data: string) => {
       if (data) {
-        dispatch(addDiningLink(`http://localhost:3001/login?token=${data}`));
+        dispatch(
+          addDiningLink(`https://orderfood-eta.vercel.app/login?token=${data}`)
+        );
       }
     });
   }, [dispatch, hotel]);
