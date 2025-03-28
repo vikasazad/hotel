@@ -7,9 +7,12 @@ import { getHotelDataLive } from "@/lib/firebase/functions";
 import { jwtVerify } from "jose";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 // import QuickServices from "./quickServices";
 
 const Main = () => {
+  const user = useSelector((state: RootState) => state.addToOrderData.user);
   const [data, setData] = useState({ hotel: false, info: false });
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -17,7 +20,7 @@ const Main = () => {
 
   useEffect(() => {
     // This effect will only run in the browser
-    const token: any = localStorage?.getItem("authToken");
+    const token: any = user?.token;
     if (!token) {
       router.push("/login");
       return;

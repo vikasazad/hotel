@@ -4,9 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { jwtVerify } from "jose";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store";
+import { addUser } from "@/lib/features/addToOrderSlice";
 
 export default function Login() {
   const secretKey = "Vikas@1234";
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -27,7 +31,7 @@ export default function Login() {
 
         if (decoded?.payload) {
           // Store the token in localStorage for later use
-          localStorage?.setItem("authToken", token);
+          dispatch(addUser({ ...decoded?.payload, token: token }));
           router.push("/");
         }
       } catch (error) {

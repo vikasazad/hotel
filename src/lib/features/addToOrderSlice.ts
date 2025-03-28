@@ -4,6 +4,7 @@ const initialState = {
   addToOrderData: [] as any[], // Change this to an array of objects with 'name', 'price', and 'count'
   addedItemIds: [] as any[],
   finalOrder: {} as any,
+  user: {} as any,
 };
 
 export const addToOrder = createSlice({
@@ -51,6 +52,9 @@ export const addToOrder = createSlice({
     setFinalOrder: (state, action) => {
       state.finalOrder = action.payload;
     },
+    addUser: (state, action) => {
+      state.user = action.payload;
+    },
   },
 });
 
@@ -61,5 +65,6 @@ export const {
   clearCart,
   clearSpecific,
   setFinalOrder,
+  addUser,
 } = addToOrder.actions;
 export default addToOrder.reducer;
