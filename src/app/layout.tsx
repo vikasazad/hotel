@@ -19,13 +19,14 @@ export default function RootLayout({
   if (!storeRef.current) {
     storeRef.current = store();
   }
+  const token = localStorage.getItem("authToken");
   return (
     <html lang="en" className={dmSans.className}>
       <body>
         <main>
           <Provider store={storeRef.current}>
             {children}
-            <Footer />
+            {token && <Footer />}
           </Provider>
         </main>
       </body>
