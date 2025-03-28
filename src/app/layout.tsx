@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
-import { Provider } from "react-redux";
-import store, { AppStore } from "../lib/store";
+import { Provider, useSelector } from "react-redux";
+import store, { AppStore, RootState } from "../lib/store";
 
 import { DM_Sans } from "next/font/google";
 import { useRef } from "react";
@@ -19,14 +19,14 @@ export default function RootLayout({
   if (!storeRef.current) {
     storeRef.current = store();
   }
-  const token = localStorage.getItem("authToken");
+  const user = useSelector((state: RootState) => state.addToOrderData.user);
   return (
     <html lang="en" className={dmSans.className}>
       <body>
         <main>
           <Provider store={storeRef.current}>
             {children}
-            {token && <Footer />}
+            {user?.token && <Footer />}
           </Provider>
         </main>
       </body>
