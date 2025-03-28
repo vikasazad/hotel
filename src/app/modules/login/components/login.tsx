@@ -8,12 +8,12 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/lib/store";
 import { addUser } from "@/lib/features/addToOrderSlice";
 
-export default function Login() {
+function LoginComponent() {
   const secretKey = "Vikas@1234";
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams(); // Must be inside Suspense
 
   useEffect(() => {
     async function decodeUrl() {
@@ -31,7 +31,7 @@ export default function Login() {
 
         if (decoded?.payload) {
           // Store the token in localStorage for later use
-          dispatch(addUser({ ...decoded?.payload, token: token }));
+          dispatch(addUser({ ...decoded?.payload, token }));
           router.push("/");
         }
       } catch (error) {
@@ -58,27 +58,29 @@ export default function Login() {
   }
 
   return (
-    <>
-      <Suspense
-        fallback={
-          <div className="flex justify-center items-center h-screen">
-            <Image
-              src="/loader.svg"
-              alt="Loading..."
-              width={50}
-              height={50}
-              priority
-            />
-          </div>
-        }
-      >
-        <div className="flex justify-center items-center h-screen">
-          <h1 className="text-xl font-bold text-red-500">
-            Unauthorized Access
-          </h1>
-        </div>
-      </Suspense>
-    </>
+    <div className="flex justify-center items-center h-screen">
+      <h1 className="text-xl font-bold text-red-500">Unauthorized Access</h1>
+    </div>
   );
 }
-// http://localhost:3001/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpa3VtYXIuYXphZEBnbWFpbC5jb20iLCJyb29tTm8iOiIyMDEiLCJ0YWciOiJjb25jaWVyZ2UiLCJ0YXgiOnsiZ3N0UGVyY2VudGFnZSI6IjE4In19.XzFp_7HHhVxaqzSyrcpY1nptWtezOe3I07SeQrjwyrs
+
+// Wrap `LoginComponent` inside Suspense
+export default function Login() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-screen">
+          <Image
+            src="/loader.svg"
+            alt="Loading..."
+            width={50}
+            height={50}
+            priority
+          />
+        </div>
+      }
+    >
+      <LoginComponent />
+    </Suspense>
+  );
+}
