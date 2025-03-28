@@ -27,7 +27,7 @@ export default function Login() {
 
         if (decoded?.payload) {
           // Store the token in localStorage for later use
-          localStorage.setItem("authToken", token);
+          localStorage?.setItem("authToken", token);
           router.push("/");
         }
       } catch (error) {

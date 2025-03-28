@@ -18,7 +18,7 @@ const Main = () => {
   useEffect(() => {
     async function verifyAndSetupListener() {
       try {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage?.getItem("authToken");
         if (!token) {
           router.push("/login");
           return;
