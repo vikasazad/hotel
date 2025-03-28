@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { jwtVerify } from "jose";
 import Image from "next/image";
@@ -41,7 +41,7 @@ export default function Login() {
     }
 
     decodeUrl();
-  }, [router, searchParams]);
+  }, [router, searchParams, dispatch]);
 
   if (isLoading) {
     return (
@@ -58,9 +58,27 @@ export default function Login() {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <h1 className="text-xl font-bold text-red-500">Unauthorized Access</h1>
-    </div>
+    <>
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-screen">
+            <Image
+              src="/loader.svg"
+              alt="Loading..."
+              width={50}
+              height={50}
+              priority
+            />
+          </div>
+        }
+      >
+        <div className="flex justify-center items-center h-screen">
+          <h1 className="text-xl font-bold text-red-500">
+            Unauthorized Access
+          </h1>
+        </div>
+      </Suspense>
+    </>
   );
 }
 // http://localhost:3001/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpa3VtYXIuYXphZEBnbWFpbC5jb20iLCJyb29tTm8iOiIyMDEiLCJ0YWciOiJjb25jaWVyZ2UiLCJ0YXgiOnsiZ3N0UGVyY2VudGFnZSI6IjE4In19.XzFp_7HHhVxaqzSyrcpY1nptWtezOe3I07SeQrjwyrs
