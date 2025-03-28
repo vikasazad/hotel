@@ -16,19 +16,15 @@ const Main = () => {
   const secretKey = "Vikas@1234";
 
   useEffect(() => {
+    // This effect will only run in the browser
+    const token: any = localStorage?.getItem("authToken");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     async function verifyAndSetupListener() {
       try {
-        // Check if we're in browser environment
-        const token =
-          typeof window !== "undefined"
-            ? localStorage?.getItem("authToken")
-            : null;
-
-        if (!token) {
-          router.push("/login");
-          return;
-        }
-
         const key = new TextEncoder().encode(secretKey);
         const decoded: any = await jwtVerify(token, key, {
           algorithms: ["HS256"],
