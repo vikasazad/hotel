@@ -18,7 +18,12 @@ const Main = () => {
   useEffect(() => {
     async function verifyAndSetupListener() {
       try {
-        const token = localStorage?.getItem("authToken");
+        // Check if we're in browser environment
+        const token =
+          typeof window !== "undefined"
+            ? localStorage?.getItem("authToken")
+            : null;
+
         if (!token) {
           router.push("/login");
           return;
