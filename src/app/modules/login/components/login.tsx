@@ -31,7 +31,6 @@ function LoginComponent() {
 
         if (decoded?.payload) {
           // Store the token in localStorage for later use
-          console.log("decoded");
           dispatch(addUser({ ...decoded?.payload, token }));
           router.push("/");
         }
