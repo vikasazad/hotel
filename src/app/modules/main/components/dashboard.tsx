@@ -47,15 +47,8 @@ const Dashboard = ({ hotel, info }: any) => {
       hotel?.bookingDetails?.customer?.name
     ).then((data: string) => {
       if (data) {
-        console.log(
-          "data",
-          `${process.env.NEXT_PUBLIC_BASE_URL}/login?token=${data}`
-        );
-        dispatch(
-          addDiningLink(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/login?token=${data}`
-          )
-        );
+        console.log("data", `${process.env.BASE_URL}/login?token=${data}`);
+        dispatch(addDiningLink(`${process.env.BASE_URL}/login?token=${data}`));
       }
     });
   }, [dispatch, hotel]);
