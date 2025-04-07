@@ -2,22 +2,22 @@ import { db } from "@/config/db/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { SignJWT } from "jose";
 
-export async function createOrder() {
+export async function createOrder({ location, customer, orderData }: any) {
   const res = await fetch("/api/createOrder", {
     method: "POST",
-    body: JSON.stringify({ amount: 100 * 100 }),
+    body: JSON.stringify({ amount: orderData?.payment?.price * 100 }),
   });
   const data = await res.json();
 
   const paymentData = {
     key: process.env.RAZORPAY_API_KEY,
     order_id: data.id,
-    name: "Rosier",
-    description: "Thank you",
+    name: "Buildbility",
+    description: "Thank you for your order",
     image: "",
     prefill: {
-      name: "8851280284",
-      contact: "8851280284",
+      name: customer?.name,
+      contact: customer?.phone,
     },
     notes: {
       address: "Razorpay Corporate Office",
@@ -42,6 +42,12 @@ export async function createOrder() {
         razorpaySignature: response.razorpay_signature,
       });
       if (data.isOk) {
+        sendHotelOrder(
+          location,
+          orderData,
+          response.razorpay_order_id,
+          response.razorpay_payment_id
+        );
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
         //   "f5WtuYAa4fi-Gbg8VSCVub:APA91bEh6W51Od84BARGVCh6Dc475Hqw3nefZncWNFPoT92yaJ4ouaorlliinGnaJu3v202sYHmegcSxURwxOpbbHyaWouYOUuDyLaZ5wlpPSDBl02me5Hs",
@@ -56,6 +62,94 @@ export async function createOrder() {
 
   const payment = new (window as any).Razorpay(paymentData);
   payment.open();
+}
+
+export async function sendHotelOrder(
+  location: any,
+  orderData: any,
+  orderId: string,
+  paymentId: string
+) {
+  console.log("HERE");
+
+  const newTransaction = {
+    location: location || "",
+    against: orderData.orderId || "",
+    attendant: orderData.attendant || "",
+    attendantToken: orderData.attendantToken || "",
+    bookingId: "",
+    payment: {
+      paymentStatus: "paid",
+      mode: "online",
+      paymentId: paymentId || "",
+      timeOfTransaction: new Date().toISOString(),
+      transctionId: orderId || "",
+      price: orderData.payment.price || 0,
+      subtotal: orderData.payment.subtotal || 0,
+      priceAfterDiscount: "",
+      paymentType: "single",
+      gst: orderData.payment.gst,
+      discount: orderData.payment.discount,
+    },
+  };
+
+  const docRef = doc(db, "vikumar.azad@gmail.com", "hotel");
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const rooms = data?.live?.rooms || [];
+
+      let roomFound = false;
+
+      // Iterate over rooms to find the matching location
+      for (const room of rooms) {
+        if (room.bookingDetails?.location === location) {
+          roomFound = true;
+
+          // Find and update the matching order's payment details
+          if (room.diningDetails?.orders) {
+            room.diningDetails.orders = room.diningDetails.orders.map(
+              (order: any) => {
+                if (order.orderId === orderData.orderId) {
+                  return {
+                    ...order,
+                    payment: {
+                      ...order.payment,
+                      paymentStatus: "paid",
+                      mode: "online",
+                      paymentId: paymentId,
+                      timeOfTransaction: new Date().toISOString(),
+                      transctionId: orderId,
+                      paymentType: "single",
+                    },
+                  };
+                }
+                return order;
+              }
+            );
+          }
+
+          // Add the new transaction
+          room.transctions = [...(room.transctions || []), newTransaction];
+
+          console.log(`Updates applied for location: ${location}`);
+        }
+      }
+
+      if (!roomFound) {
+        console.error(`No room found with location: ${location}`);
+      }
+
+      // Save the updated data back to Firestore
+      await updateDoc(docRef, { "live.rooms": rooms });
+      console.log("Data updated successfully.");
+    } else {
+      console.error("Document does not exist.");
+    }
+  } catch (error) {
+    console.error("Error updating order:", error);
+  }
 }
 
 export async function cancelOrder(orderId: string, roomNo: string) {
@@ -140,7 +234,8 @@ export async function cancelOrder(orderId: string, roomNo: string) {
 export async function generateToken(
   email: string,
   roomNo: string,
-  phoneNumber: string
+  phoneNumber: string,
+  name: string
 ) {
   const encodedSecretKey = new TextEncoder().encode("Vikas@1234");
 
@@ -148,6 +243,7 @@ export async function generateToken(
     email,
     tableNo: roomNo,
     phoneNumber,
+    name,
     tag: "hotel",
     tax: { gstPercentage: "" },
   };

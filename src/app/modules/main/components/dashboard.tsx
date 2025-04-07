@@ -43,22 +43,29 @@ const Dashboard = ({ hotel, info }: any) => {
     generateToken(
       "vikumar.azad@gmail.com",
       hotel?.bookingDetails?.location,
-      hotel?.bookingDetails?.customer?.phone
+      hotel?.bookingDetails?.customer?.phone,
+      hotel?.bookingDetails?.customer?.name
     ).then((data: string) => {
       if (data) {
         dispatch(
-          addDiningLink(`https://orderfood-eta.vercel.app/login?token=${data}`)
+          addDiningLink(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/login?token=${data}`
+          )
         );
       }
     });
   }, [dispatch, hotel]);
 
-  const handlePayment = ({ info }: any) => {
+  const handlePayment = (hotel: any, service: any) => {
     console.log("clicked");
-    console.log("INFO", info);
+    console.log("INFO", hotel, service);
 
     setLoadScript(true);
-    createOrder();
+    createOrder({
+      location: hotel.bookingDetails?.location,
+      customer: hotel.bookingDetails?.customer,
+      orderData: service,
+    });
   };
 
   const handleCancellation = (service: any) => {
@@ -240,7 +247,7 @@ const Dashboard = ({ hotel, info }: any) => {
                             variant="default"
                             size="sm"
                             disabled={service.payment.paymentStatus === "paid"}
-                            onClick={() => handlePayment(service)}
+                            onClick={() => handlePayment(hotel, service)}
                           >
                             {service.payment.paymentStatus === "pending"
                               ? "Pay Now"
@@ -381,7 +388,7 @@ const Dashboard = ({ hotel, info }: any) => {
                           variant="default"
                           size="sm"
                           disabled={service.payment.paymentStatus === "paid"}
-                          onClick={() => handlePayment(service)}
+                          onClick={() => handlePayment(hotel, service)}
                         >
                           {service.payment.paymentStatus === "pending"
                             ? "Pay Now"
