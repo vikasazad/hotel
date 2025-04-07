@@ -22,6 +22,7 @@ const Main = () => {
     // This effect will only run in the browser
     const token: any = user?.token;
     if (!token) {
+      console.log("no token");
       router.push("/login");
       return;
     }
@@ -46,6 +47,7 @@ const Main = () => {
           );
           return () => unsubscribe();
         } else {
+          console.log("no phone");
           router.push("/login");
         }
       } catch (error) {
@@ -55,7 +57,7 @@ const Main = () => {
     }
 
     verifyAndSetupListener();
-  }, [router]);
+  }, [router, user]);
 
   if (isLoading) {
     return (
