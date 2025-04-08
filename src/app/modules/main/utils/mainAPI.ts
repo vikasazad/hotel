@@ -10,7 +10,7 @@ export async function createOrder({ location, customer, orderData }: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Buildbility",
     description: "Thank you for your order",

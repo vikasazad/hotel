@@ -31,7 +31,7 @@ export async function createServiceUpdateOrder(upgradeData: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Rosier",
     description: "Thank you",
@@ -86,7 +86,7 @@ export async function createWellnessOrder(wellnessData: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Rosier",
     description: "Thank you",
@@ -223,7 +223,7 @@ export async function createRecreationalOrder(recreational: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Rosier",
     description: "Thank you",
@@ -284,7 +284,7 @@ export async function createTransportationOrder(transportation: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Rosier",
     description: "Thank you",
@@ -343,7 +343,7 @@ export async function createPersonalShoppingOrder(personalShopping: any) {
   const data = await res.json();
 
   const paymentData = {
-    key: process.env.RAZORPAY_API_KEY,
+    key: process.env.NEXT_PUBLIC_RAZORPAY_API_KEY,
     order_id: data.id,
     name: "Rosier",
     description: "Thank you",
