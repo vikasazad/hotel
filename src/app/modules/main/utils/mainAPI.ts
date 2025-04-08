@@ -234,7 +234,7 @@ export async function cancelOrder(orderId: string, roomNo: string) {
 export async function generateToken(
   email: string,
   roomNo: string,
-  phoneNumber: string,
+  phone: string,
   name: string
 ) {
   const encodedSecretKey = new TextEncoder().encode("Vikas@1234");
@@ -242,7 +242,7 @@ export async function generateToken(
   const payload = {
     email,
     tableNo: roomNo,
-    phoneNumber,
+    phone,
     name,
     tag: "hotel",
     tax: { gstPercentage: "" },
