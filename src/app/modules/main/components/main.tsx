@@ -46,6 +46,7 @@ const Main = () => {
           );
           return () => unsubscribe();
         } else {
+          console.log("No phone number found");
           router.push("/login");
         }
       } catch (error) {
