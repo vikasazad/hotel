@@ -1,9 +1,14 @@
-import Main from "./modules/main/components/main";
+"use client";
 
-export default async function Home() {
+import Main from "./modules/main/components/main";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
+export default function Home() {
   return (
-    <div className="p-2">
-      <Main />
-    </div>
+    <ProtectedRoute>
+      <div className="p-2">
+        <Main />
+      </div>
+    </ProtectedRoute>
   );
 }

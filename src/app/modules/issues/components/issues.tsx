@@ -82,7 +82,7 @@ export default function Issues() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {services.map((service) => (
+          {services.sort().map((service) => (
             <Card
               key={service.title}
               className="group hover:shadow-lg transition-all duration-200 cursor-pointer"

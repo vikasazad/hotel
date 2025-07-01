@@ -1,42 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Utensils } from "lucide-react";
+import React, { useEffect } from "react";
+import { Card, CardHeader } from "@/components/ui/card";
+
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-import Script from "next/script";
-import { cancelOrder, createOrder, generateToken } from "../utils/mainAPI";
+import { generateToken } from "../utils/mainAPI";
 import { useDispatch } from "react-redux";
 import { addData, addDiningLink } from "@/lib/features/bookingInfoSlice";
 import { AppDispatch } from "@/lib/store";
-import { cn } from "@/lib/utils";
-
-const getBadgeVariant = (status: string) => {
-  switch (status) {
-    case "completed":
-      return "default";
-    case "pending":
-      return "secondary";
-    case "rejected":
-      return "destructive";
-    default:
-      return "default";
-  }
-};
+import RecentOrders from "./recentOrders";
 
 const Dashboard = ({ hotel, info }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  console.log("Dashboard", hotel);
+  console.log("Dashboard", info);
   const router = useRouter();
-  const [loadScript, setLoadScript] = useState(false);
   useEffect(() => {
     dispatch(addData(hotel));
 
@@ -60,34 +38,8 @@ const Dashboard = ({ hotel, info }: any) => {
     });
   }, [dispatch, hotel]);
 
-  const handlePayment = (hotel: any, service: any) => {
-    console.log("clicked");
-    console.log("INFO", hotel, service);
-
-    setLoadScript(true);
-    createOrder({
-      location: hotel.bookingDetails?.location,
-      customer: hotel.bookingDetails?.customer,
-      orderData: service,
-    });
-  };
-
-  const handleCancellation = (service: any) => {
-    console.log(service);
-    let id = service.serviceId;
-    if (service.issueId) {
-      id = service.issueId;
-    }
-    cancelOrder(id, hotel.bookingDetails?.location);
-  };
   return (
     <>
-      {loadScript && (
-        <Script
-          type="text/javascript"
-          src="https://checkout.razorpay.com/v1/checkout.js"
-        />
-      )}
       <Card className="w-full max-w-lg shadow-lg mb-10">
         <CardHeader className="space-y-2 p-4">
           <div className="flex justify-between items-center">
@@ -96,7 +48,7 @@ const Dashboard = ({ hotel, info }: any) => {
               <div className="text-yellow-400">{info?.rating}</div>
               <p className="text-gray-500 text-sm">{info?.description}</p>
             </div>
-            <div className="bg-green-100 p-3 rounded-lg text-center px-4">
+            <div className="bg-green-100 px-3 py-2 rounded-lg text-center ">
               <div className="text-2xl font-bold text-green-700">
                 {hotel?.bookingDetails?.nights}
               </div>
@@ -137,8 +89,8 @@ const Dashboard = ({ hotel, info }: any) => {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-2 px-4 pb-4">
-          {hotel?.diningDetails?.orders?.length > 0 &&
+        {/* <CardContent className="space-y-2 px-4 pb-4"> */}
+        {/* {hotel?.diningDetails?.orders?.length > 0 &&
             hotel?.diningDetails?.orders.map((service: any) => (
               <Accordion
                 type="single"
@@ -241,12 +193,6 @@ const Dashboard = ({ hotel, info }: any) => {
                       </div>
                       <div className="flex gap-2 mt-4">
                         <>
-                          {/* <Button variant="outline" size="sm">
-                          Modify
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          Cancel
-                        </Button> */}
                           <Button
                             variant="default"
                             size="sm"
@@ -263,8 +209,8 @@ const Dashboard = ({ hotel, info }: any) => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            ))}
-          {hotel?.servicesUsed &&
+            ))} */}
+        {/* {hotel?.servicesUsed &&
             hotel?.servicesUsed?.map((service: any) => (
               <Accordion
                 type="single"
@@ -378,9 +324,7 @@ const Dashboard = ({ hotel, info }: any) => {
                         </div>
                       </div>
                       <div className="flex gap-2 mt-4">
-                        {/* <Button variant="outline" size="sm">
-                        Modify
-                      </Button> */}
+                        
                         <Button
                           variant="outline"
                           size="sm"
@@ -403,8 +347,8 @@ const Dashboard = ({ hotel, info }: any) => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            ))}
-          {hotel?.issuesReported &&
+            ))} */}
+        {/* {hotel?.issuesReported &&
             Object.values(hotel?.issuesReported).map(
               (service: any, id: any) => (
                 <Accordion
@@ -457,9 +401,10 @@ const Dashboard = ({ hotel, info }: any) => {
                   </AccordionItem>
                 </Accordion>
               )
-            )}
-        </CardContent>
+            )} */}
+        {/* </CardContent> */}
       </Card>
+      <RecentOrders hotel={hotel} />
     </>
   );
 };

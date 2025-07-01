@@ -17,7 +17,11 @@ function LoginComponent() {
 
   useEffect(() => {
     async function decodeUrl() {
-      const token = searchParams.get("token");
+      let token = searchParams.get("token");
+      if (!token) {
+        token = localStorage.getItem("authToken");
+      }
+      console.log("token", token);
       if (!token) {
         setIsLoading(false);
         return;
@@ -30,7 +34,11 @@ function LoginComponent() {
         });
 
         if (decoded?.payload) {
-          // Store the token in localStorage for later use
+          // Store the token in localStorage for better user experience
+          localStorage.setItem("authToken", token);
+          localStorage.setItem("user", JSON.stringify(decoded.payload));
+
+          // Also store in Redux for app state management
           dispatch(addUser({ ...decoded?.payload, token }));
           router.push("/");
         }

@@ -171,40 +171,42 @@ export default function Services({ data }: any) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.keys(data.services).map((serviceKey) => {
-                const matchedService = serviceArr.find(
-                  (s) => s.title === serviceKey
-                );
-                if (!matchedService) return null;
+              {Object.keys(data.services)
+                .sort()
+                .map((serviceKey) => {
+                  const matchedService = serviceArr.find(
+                    (s) => s.title === serviceKey
+                  );
+                  if (!matchedService) return null;
 
-                const { icon: Icon, color, description } = matchedService;
+                  const { icon: Icon, color, description } = matchedService;
 
-                return (
-                  <Card
-                    key={serviceKey}
-                    onClick={() => categoryClick(serviceKey)}
-                    className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
-                  >
-                    <CardContent className="p-3">
-                      <div className="space-y-4">
-                        <div
-                          className={`w-12 h-12 rounded-lg flex items-center justify-center ${color} transition-transform group-hover:scale-110`}
-                        >
-                          <Icon className="w-6 h-6" />
+                  return (
+                    <Card
+                      key={serviceKey}
+                      onClick={() => categoryClick(serviceKey)}
+                      className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    >
+                      <CardContent className="p-3">
+                        <div className="space-y-4">
+                          <div
+                            className={`w-12 h-12 rounded-lg flex items-center justify-center ${color} transition-transform group-hover:scale-110`}
+                          >
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <div className="space-y-2">
+                            <h3 className="font-semibold text-xl">
+                              {serviceKey}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {description}
+                            </p>
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-xl">
-                            {serviceKey}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {description}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           </div>
         </>

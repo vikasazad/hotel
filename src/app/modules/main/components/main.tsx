@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import QuickServices from "./quickServices";
 // import QuickServices from "./quickServices";
 
 const Main = () => {
@@ -77,6 +78,7 @@ const Main = () => {
       <Header data={data.info} />
       <h1 className="text-2xl font-extrabold px-2 py-2">Dashboard</h1>
       <Deals />
+      <QuickServices />
       <Dashboard hotel={data.hotel} info={data.info} />
       {/* <QuickServices /> */}
     </div>
