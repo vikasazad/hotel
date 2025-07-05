@@ -2,7 +2,7 @@ import { db } from "@/config/db/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
 export function getHotelDataLive(
-  phoneNumber: string,
+  roomNo: string,
   email: string,
   callback: (data: any) => void
 ) {
@@ -26,7 +26,7 @@ export function getHotelDataLive(
 
         // Find the room with matching phone number
         const matchingRoom = hotelData.rooms.find(
-          (room: any) => room.bookingDetails?.customer?.phone === phoneNumber
+          (room: any) => room.bookingDetails?.location === roomNo
         );
 
         callback({

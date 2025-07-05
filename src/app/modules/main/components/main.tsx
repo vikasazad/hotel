@@ -19,6 +19,8 @@ const Main = () => {
   const router = useRouter();
   const secretKey = "Vikas@1234";
 
+  console.log("data", data);
+
   useEffect(() => {
     // This effect will only run in the browser
     const token: any = user?.token;
@@ -35,10 +37,10 @@ const Main = () => {
         });
         console.log(decoded);
 
-        if (decoded?.payload?.phone) {
+        if (decoded?.payload?.roomNo) {
           // Set up real-time listener
           const unsubscribe = getHotelDataLive(
-            decoded?.payload?.phone as string,
+            decoded?.payload?.roomNo as string,
             decoded?.payload?.email,
             (newData) => {
               setData(newData);
@@ -79,7 +81,7 @@ const Main = () => {
       <h1 className="text-2xl font-extrabold px-2 py-2">Dashboard</h1>
       <Deals />
       <QuickServices user={user} requests={data.hotel} />
-      <Dashboard hotel={data.hotel} info={data.info} />
+      <Dashboard hotel={data.hotel} info={data.info} email={user?.email} />
       {/* <QuickServices /> */}
     </div>
   );

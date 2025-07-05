@@ -11,15 +11,14 @@ import { addData, addDiningLink } from "@/lib/features/bookingInfoSlice";
 import { AppDispatch } from "@/lib/store";
 import RecentOrders from "./recentOrders";
 
-const Dashboard = ({ hotel, info }: any) => {
+const Dashboard = ({ hotel, info, email }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  console.log("Dashboard", info);
   const router = useRouter();
   useEffect(() => {
     dispatch(addData(hotel));
 
     generateToken(
-      "vikumar.azad@gmail.com",
+      email,
       hotel?.bookingDetails?.location,
       hotel?.bookingDetails?.customer?.phone,
       hotel?.bookingDetails?.customer?.name
@@ -36,7 +35,7 @@ const Dashboard = ({ hotel, info }: any) => {
         );
       }
     });
-  }, [dispatch, hotel]);
+  }, [dispatch, hotel, email]);
 
   return (
     <>
