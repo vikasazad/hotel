@@ -1,6 +1,6 @@
 "use client";
 
-import { Droplets, Shirt, Wrench, Bed } from "lucide-react";
+import { Droplets, Shirt, Wrench, Bed, Timer } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -20,6 +20,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { handleServiceRequest } from "../utils/mainAPI";
 
 const services = [
   {
@@ -48,7 +49,8 @@ const services = [
   },
 ];
 
-export default function QuickServices() {
+export default function QuickServices({ user, requests }: any) {
+  console.log(user);
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [waterSize, setWaterSize] = useState("");
@@ -60,6 +62,11 @@ export default function QuickServices() {
   const handleOpen = (service: any) => {
     setSelectedService(service);
     setOpen(true);
+  };
+
+  const handleSubmit = async (service: string, info: string, time?: string) => {
+    const res = await handleServiceRequest(user, service, info, time);
+    console.log(res);
   };
 
   const renderDrawerContent = () => {
@@ -84,7 +91,12 @@ export default function QuickServices() {
               </Select>
             </div>
             <DrawerFooter>
-              <Button className="w-full">Submit Request</Button>
+              <Button
+                className="w-full"
+                onClick={() => waterSize && handleSubmit("Water", waterSize)}
+              >
+                Submit Request
+              </Button>
             </DrawerFooter>
           </>
         );
@@ -112,7 +124,12 @@ export default function QuickServices() {
               </Select>
             </div>
             <DrawerFooter>
-              <Button className="w-full">Submit Request</Button>
+              <Button
+                className="w-full"
+                onClick={() => toiletry && handleSubmit("Toiletries", toiletry)}
+              >
+                Submit Request
+              </Button>
             </DrawerFooter>
           </>
         );
@@ -142,7 +159,14 @@ export default function QuickServices() {
               </Select>
             </div>
             <DrawerFooter>
-              <Button className="w-full">Submit Request</Button>
+              <Button
+                className="w-full"
+                onClick={() =>
+                  assistance && handleSubmit("Technical Assistance", assistance)
+                }
+              >
+                Submit Request
+              </Button>
             </DrawerFooter>
           </>
         );
@@ -166,7 +190,7 @@ export default function QuickServices() {
                   />
                   Urgent Need
                 </label>
-                <label className="flex items-center gap-2">
+                {/* <label className="flex items-center gap-2">
                   <input
                     type="radio"
                     name="housekeepingType"
@@ -175,7 +199,7 @@ export default function QuickServices() {
                     onChange={() => setHousekeepingType("schedule")}
                   />
                   Schedule Housekeeping
-                </label>
+                </label> */}
               </div>
               {housekeepingType === "schedule" && (
                 <Select
@@ -197,7 +221,19 @@ export default function QuickServices() {
               )}
             </div>
             <DrawerFooter>
-              <Button className="w-full">Submit Request</Button>
+              <Button
+                className="w-full"
+                onClick={() =>
+                  housekeepingType &&
+                  handleSubmit(
+                    "Housekeeping",
+                    housekeepingType,
+                    housekeepingTime
+                  )
+                }
+              >
+                Submit Request
+              </Button>
             </DrawerFooter>
           </>
         );
@@ -231,6 +267,36 @@ export default function QuickServices() {
           </Drawer>
         ))}
       </div>
+      {Object.keys(requests.bookingDetails.requests).length > 0 && (
+        <div className="w-full space-y-4">
+          <h2 className="text-xl font-bold my-4">Requests</h2>
+          {Object.values(requests.bookingDetails.requests).map(
+            (request: any) => (
+              <div
+                key={request.id}
+                className="flex items-center justify-between border-b border-gray-200 pb-2"
+              >
+                <p className="text-sm text-gray-500">
+                  {request.service} - {request.info}
+                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-500">
+                    {new Date(request.time).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  </p>
+
+                  {request.status === "requested" && (
+                    <Timer className="w-4 h-4 text-yellow-500" />
+                  )}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 }

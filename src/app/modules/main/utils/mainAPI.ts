@@ -1,5 +1,5 @@
 import { db } from "@/config/db/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { SignJWT } from "jose";
 
 export async function createOrder({ location, customer, orderData }: any) {
@@ -251,4 +251,199 @@ export async function generateToken(
     .setProtectedHeader({ alg: "HS256" })
     .sign(encodedSecretKey);
   return token;
+}
+
+export async function handleServiceRequest(
+  user: any,
+  service: string,
+  info: string,
+  time?: string
+) {
+  //send message to attendant
+  //save the request in the database under bookingDetails
+  const phoneNumber = await findSpecialAttendant(user);
+  const randomStr = (n: number) =>
+    [...Array(n)]
+      .map(
+        () =>
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[
+            Math.floor(Math.random() * 62)
+          ]
+      )
+      .join("");
+  const id = randomStr(6);
+  if (phoneNumber) {
+    const message = await sendMessageToAttendant(
+      user,
+      id,
+      phoneNumber,
+      service,
+      info,
+      time,
+      user?.roomNo,
+      user?.tag
+    );
+    if (!message) {
+      console.log("Message not sent");
+    }
+    const docRef = doc(db, user.email, "hotel");
+    const docSnap = await getDoc(docRef);
+    const data = docSnap.data()?.live?.rooms;
+    const room = data.find(
+      (el: any) => el.bookingDetails?.location === user?.roomNo
+    );
+    console.log("room", room);
+    if (room) {
+      const roomIndex = data.findIndex(
+        (el: any) => el.bookingDetails?.location === user?.roomNo
+      );
+
+      const updatedData = [...data];
+      if (!updatedData[roomIndex].bookingDetails.requests) {
+        updatedData[roomIndex].bookingDetails.requests = {};
+      }
+
+      updatedData[roomIndex].bookingDetails.requests[id] = {
+        id,
+        user,
+        service,
+        info,
+        attendant: phoneNumber,
+        time: new Date().toISOString(),
+        status: "requested",
+      };
+
+      await updateDoc(docRef, {
+        "live.rooms": updatedData,
+      });
+    }
+    return true;
+  }
+}
+
+async function findSpecialAttendant(user: any) {
+  const docRef = doc(db, user.email, "info");
+  const docSnap = await getDoc(docRef);
+  const data = docSnap.data()?.staff;
+
+  const staff = data.find((el: any) => el.role === "specialattendant");
+  return staff?.contact;
+}
+
+export async function sendMessageToAttendant(
+  user: any,
+  id: string,
+  phoneNumber: string,
+  service: string,
+  info: string,
+  time?: string,
+  roomNo?: string,
+  tag?: string
+) {
+  try {
+    // Format phone number - remove any special characters and ensure proper format
+    console.log("phoneNumber", phoneNumber);
+    const formattedPhone = phoneNumber.replace(/\D/g, "");
+    let message = `Hey! Room No-${roomNo} made a ${tag}  request for ${service} ${info} `;
+    if (time) {
+      message = `Hey! Room No-${roomNo} made a ${tag}  request for ${service} ${info} at ${time}`;
+    }
+
+    const response = await fetch(
+      `https://graph.facebook.com/v22.0/616505061545755/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WHATSAPP_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: formattedPhone,
+          type: "interactive",
+          interactive: {
+            type: "button",
+            body: {
+              text: message,
+            },
+            action: {
+              buttons: [
+                {
+                  type: "reply",
+                  reply: {
+                    id: `request_resolved_${id}`,
+                    title: "Ok Request Resolved",
+                  },
+                },
+              ],
+            },
+          },
+        }),
+      }
+    );
+
+    const data = await response.json();
+    if (response.ok && data.messages && data.messages[0]) {
+      const messageId = data.messages[0].id;
+
+      // Store pending assignment with status
+      await storePendingAssignment({
+        staffName: "",
+        orderId: id,
+        staffContact: phoneNumber,
+        messageId,
+        timestamp: Date.now(),
+        attemptCount: 1,
+        customerName: "",
+        roomNumber: roomNo,
+        status: "pending",
+        businessEmail: user.email, // Set the proper business email
+      });
+
+      console.log("initial pendingAssignments stored in database");
+
+      // Set timeout using configurable duration
+
+      return true;
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Failed to send message");
+    }
+  } catch (error: any) {
+    console.error("WhatsApp API Error:", error);
+    return false;
+  }
+}
+
+async function storePendingAssignment(assignment: any) {
+  try {
+    // Store assignment as a field within the webhook document
+    console.log("assignment", assignment);
+    const businessEmail = assignment.businessEmail || "vikumar.azad@gmail.com";
+    const docRef = doc(db, businessEmail, "webhook");
+
+    // Get existing webhook document
+    const docSnap = await getDoc(docRef);
+    let existingAssignments = {};
+
+    if (docSnap.exists()) {
+      existingAssignments = docSnap.data() || {};
+    }
+
+    // Add the new assignment
+    const updatedAssignments = {
+      ...existingAssignments,
+      [assignment.orderId]: {
+        ...assignment,
+        status: assignment.status || "pending",
+        timestamp: Date.now(),
+      },
+    };
+
+    await setDoc(docRef, updatedAssignments);
+    console.log("Pending assignment stored:", assignment.orderId);
+  } catch (error) {
+    console.error("Error storing pending assignment:", error);
+  }
 }

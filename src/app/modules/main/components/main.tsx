@@ -78,7 +78,7 @@ const Main = () => {
       <Header data={data.info} />
       <h1 className="text-2xl font-extrabold px-2 py-2">Dashboard</h1>
       <Deals />
-      <QuickServices />
+      <QuickServices user={user} requests={data.hotel} />
       <Dashboard hotel={data.hotel} info={data.info} />
       {/* <QuickServices /> */}
     </div>

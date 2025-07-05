@@ -1,5 +1,6 @@
 import { db } from "@/config/db/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { sendWhatsAppTextMessage } from "../../services/utils/servicesApi";
 
 export async function getOnlineStaffFromFirestore(email: string) {
   const docRef = doc(db, email, "info");
@@ -28,6 +29,7 @@ export async function getOnlineStaffFromFirestore(email: string) {
         name: staffMember.name,
         notificationToken: staffMember.notificationToken,
         orders: staffMember.orders,
+        contact: staffMember.contact,
       }));
 
     return assignAttendantSequentially(onlineStaff);
@@ -84,6 +86,7 @@ export async function setOfflineRoom(newService: any, assignedAttendant: any) {
         description: newService.description
           ? newService.description
           : "No description provided",
+        imageUrl: newService.imageUrl || "", // Include image URL if provided
         reportTime: new Date().toISOString(),
         status: "Assigned",
         attendant: assignedAttendant ? assignedAttendant.name : "Unassigned",
@@ -112,6 +115,10 @@ export async function setOfflineRoom(newService: any, assignedAttendant: any) {
       await updateDoc(docRef, {
         "live.rooms": updatedData,
       });
+      await sendWhatsAppTextMessage(
+        assignedAttendant.contact,
+        `Service ${newOrderId} assigned to you, Please reachout to reception to get the service delivered.`
+      );
 
       console.log("Data successfully updated and saved to Firestore.");
       return true;

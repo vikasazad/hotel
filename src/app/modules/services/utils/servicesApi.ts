@@ -121,6 +121,7 @@ export async function createWellnessOrder(wellnessData: any) {
         const attendant: any = await getOnlineStaffFromFirestore(
           "vikumar.azad@gmail.com"
         );
+        console.log("attendant", attendant);
         setWellness(wellnessData, attendant);
 
         // sendOrder(orderData, token, "Justin");
@@ -213,6 +214,10 @@ export async function setWellness(data: any, assignedAttendant: any) {
   console.log("UPDATED", newService);
   setOfflineRoom(sanitizedFormat, data.location);
   updateOrdersForAttendant(assignedAttendant.name, newOrderId);
+  await sendWhatsAppTextMessage(
+    assignedAttendant.contact,
+    `Service ${newOrderId} assigned to you, Please reachout to reception to get the service delivered.`
+  );
 }
 
 export async function createRecreationalOrder(recreational: any) {
@@ -320,6 +325,7 @@ export async function createTransportationOrder(transportation: any) {
           "vikumar.azad@gmail.com"
         );
         setWellness(transportation, attendant);
+
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
         //   "f5WtuYAa4fi-Gbg8VSCVub:APA91bEh6W51Od84BARGVCh6Dc475Hqw3nefZncWNFPoT92yaJ4ouaorlliinGnaJu3v202sYHmegcSxURwxOpbbHyaWouYOUuDyLaZ5wlpPSDBl02me5Hs",
@@ -418,6 +424,7 @@ export async function getOnlineStaffFromFirestore(email: string) {
         name: staffMember.name,
         notificationToken: staffMember.notificationToken,
         orders: staffMember.orders,
+        contact: staffMember.contact,
       }));
 
     return assignAttendantSequentially(onlineStaff);
@@ -559,5 +566,35 @@ export async function updateOrdersForAttendant(
     console.log("Order attendant updated successfully");
   } catch (error) {
     console.error("Error updating orders: ", error);
+  }
+}
+
+export async function sendWhatsAppTextMessage(
+  phoneNumber: string,
+  message: string
+) {
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v22.0/616505061545755/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WHATSAPP_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: phoneNumber,
+          type: "text",
+          text: { body: message },
+        }),
+      }
+    );
+
+    await response.json();
+    return response.ok;
+  } catch (error) {
+    console.error("Error sending WhatsApp text message:", error);
+    return false;
   }
 }

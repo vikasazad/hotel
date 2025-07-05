@@ -192,30 +192,28 @@ const RecentOrders = ({ hotel }: any) => {
                           <span>Gourmet Selection</span>
                         </h4>
                         <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-2 border border-gray-200">
-                          {service.items.map((item: any, index: number) => (
-                            <>
-                              <div
-                                key={index}
-                                className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0 space-x-2"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <div>
-                                    <div className="font-bold text-lg text-gray-900">
-                                      {item.name}
-                                    </div>
-                                    <div className="text-sm text-gray-600 font-medium">
-                                      Quantity: {item.quantity}
-                                    </div>
+                          {service.items.map((item: any) => (
+                            <div
+                              key={item.name}
+                              className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0 space-x-2"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <div>
+                                  <div className="font-bold text-lg text-gray-900">
+                                    {item.name}
+                                  </div>
+                                  <div className="text-sm text-gray-600 font-medium">
+                                    Quantity: {item.quantity}
                                   </div>
                                 </div>
-                                <div className="flex items-center ">
-                                  <IndianRupee className="w-4 h-4 text-green-600" />
-                                  <span className="text-xl font-bold text-gray-900">
-                                    {item.price}
-                                  </span>
-                                </div>
                               </div>
-                            </>
+                              <div className="flex items-center ">
+                                <IndianRupee className="w-4 h-4 text-green-600" />
+                                <span className="text-xl font-bold text-gray-900">
+                                  {item.price}
+                                </span>
+                              </div>
+                            </div>
                           ))}
                           <Separator className="mb-2" />
                           <div className="space-y-2">

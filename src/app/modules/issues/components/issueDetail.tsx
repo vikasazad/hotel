@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Cleanliness from "./cleanliness";
 
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const IssueDetail = () => {
   const data: string = usePathname().split("/")[2];
@@ -67,7 +68,15 @@ const IssueDetail = () => {
       {availableComponent ? (
         <div className="p-4">{availableComponent}</div>
       ) : (
-        <p>No matching component found.</p>
+        <div className="flex justify-center items-center h-screen">
+          <Image
+            src="/loader.svg"
+            alt="Loading..."
+            width={50}
+            height={50}
+            priority
+          />
+        </div>
       )}
     </div>
   );
