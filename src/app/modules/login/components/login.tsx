@@ -2,11 +2,11 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { jwtVerify } from "jose";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/lib/store";
 import { addUser } from "@/lib/features/addToOrderSlice";
+import { authenticateToken } from "../utils/login";
 
 function LoginComponent() {
   const secretKey = "Vikas@1234";
@@ -28,10 +28,8 @@ function LoginComponent() {
       }
 
       try {
-        const key = new TextEncoder().encode(secretKey);
-        const decoded = await jwtVerify(token, key, {
-          algorithms: ["HS256"],
-        });
+        const decoded = await authenticateToken(token, secretKey);
+        console.log("decoded", decoded);
 
         if (decoded?.payload) {
           // Store the token in localStorage for better user experience

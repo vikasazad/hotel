@@ -17,6 +17,7 @@ const isPublicRoute = createRouteMatcher(["/login(.*)", "/api/auth/(.*)"]);
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
 
+  console.log("middleware");
   // Allow access to public routes
   if (isPublicRoute(req)) {
     return NextResponse.next();

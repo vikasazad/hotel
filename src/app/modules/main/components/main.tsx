@@ -4,12 +4,16 @@ import Deals from "./deals";
 import Dashboard from "./dashboard";
 import Header from "../../header/components/header";
 import { getHotelDataLive } from "@/lib/firebase/functions";
-import { jwtVerify } from "jose";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import QuickServices from "./quickServices";
+import { getAuthData } from "@/lib/redis/redisData";
+import { authenticateToken } from "../../login/utils/login";
+
+// Import test utilities for development/testing
+
 // import QuickServices from "./quickServices";
 
 const Main = () => {
@@ -19,8 +23,6 @@ const Main = () => {
   const router = useRouter();
   const secretKey = "Vikas@1234";
 
-  console.log("data", data);
-
   useEffect(() => {
     // This effect will only run in the browser
     const token: any = user?.token;
@@ -29,19 +31,22 @@ const Main = () => {
       return;
     }
 
+    async function fetchAuthData() {
+      const data = await getAuthData();
+      console.log("dataaaaaaaaaaaaaa", data);
+    }
+
     async function verifyAndSetupListener() {
       try {
-        const key = new TextEncoder().encode(secretKey);
-        const decoded: any = await jwtVerify(token, key, {
-          algorithms: ["HS256"],
-        });
+        const decoded = await authenticateToken(token, secretKey);
+        console.log("decoded", decoded);
         console.log(decoded);
 
         if (decoded?.payload?.roomNo) {
           // Set up real-time listener
           const unsubscribe = getHotelDataLive(
             decoded?.payload?.roomNo as string,
-            decoded?.payload?.email,
+            decoded?.payload?.email as string,
             (newData) => {
               setData(newData);
               setIsLoading(false);
@@ -58,6 +63,7 @@ const Main = () => {
       }
     }
 
+    fetchAuthData();
     verifyAndSetupListener();
   }, [router, user]);
 
@@ -82,7 +88,6 @@ const Main = () => {
       <Deals />
       <QuickServices user={user} requests={data.hotel} />
       <Dashboard hotel={data.hotel} info={data.info} email={user?.email} />
-      {/* <QuickServices /> */}
     </div>
   );
 };

@@ -21,6 +21,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { handleServiceRequest } from "../utils/mainAPI";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 const services = [
   {
@@ -50,7 +52,7 @@ const services = [
 ];
 
 export default function QuickServices({ user, requests }: any) {
-  console.log(user);
+  console.log("requests", requests);
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [waterSize, setWaterSize] = useState("");
@@ -67,6 +69,11 @@ export default function QuickServices({ user, requests }: any) {
   const handleSubmit = async (service: string, info: string, time?: string) => {
     const res = await handleServiceRequest(user, service, info, time);
     console.log(res);
+    if (!res) {
+      toast.error("Request failed", {
+        description: "Please contact the reception for assistance",
+      });
+    }
   };
 
   const renderDrawerContent = () => {
@@ -245,6 +252,7 @@ export default function QuickServices({ user, requests }: any) {
   return (
     <div className="w-full max-w-xl mx-auto mt-6 mb-8">
       <h2 className="text-xl font-bold mb-4">Quick Services</h2>
+
       <div className="grid grid-cols-2 gap-4">
         {services.map((service) => (
           <Drawer
@@ -267,36 +275,44 @@ export default function QuickServices({ user, requests }: any) {
           </Drawer>
         ))}
       </div>
-      {Object.keys(requests.bookingDetails.requests).length > 0 && (
-        <div className="w-full space-y-4">
-          <h2 className="text-xl font-bold my-4">Requests</h2>
-          {Object.values(requests.bookingDetails.requests).map(
-            (request: any) => (
-              <div
-                key={request.id}
-                className="flex items-center justify-between border-b border-gray-200 pb-2"
-              >
-                <p className="text-sm text-gray-500">
-                  {request.service} - {request.info}
-                </p>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-gray-500">
-                    {new Date(request.time).toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </p>
 
-                  {request.status === "requested" && (
-                    <Timer className="w-4 h-4 text-yellow-500" />
-                  )}
+      {requests.bookingDetails?.requests &&
+        Object.keys(requests.bookingDetails?.requests)?.length > 0 && (
+          <div className="w-full space-y-4">
+            <h2 className="text-xl font-bold my-4">Requests</h2>
+            {Object.values(requests.bookingDetails.requests).map(
+              (request: any) => (
+                <div
+                  key={request.id}
+                  className="w-full flex items-center justify-between border-b border-gray-200 pb-2 p-1"
+                >
+                  <div className="w-[70%] flex items-center gap-2">
+                    <p className="text-sm text-gray-500">
+                      {request.service} - {request.info}
+                    </p>
+                    <Badge variant="outline">
+                      {request.status.charAt(0).toUpperCase() +
+                        request.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="w-[30%] flex items-center gap-2 justify-end">
+                    <p className="text-sm text-gray-500">
+                      {new Date(request.time).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </p>
+
+                    {request.status === "requested" && (
+                      <Timer className="w-4 h-4 text-yellow-500" />
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          )}
-        </div>
-      )}
+              )
+            )}
+          </div>
+        )}
     </div>
   );
 }

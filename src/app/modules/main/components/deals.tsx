@@ -6,6 +6,7 @@ import { Gift, Percent, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { sendWhatsAppFlow } from "../utils/mainAPI";
 
 export default function Deals() {
   const router = useRouter();
@@ -21,6 +22,11 @@ export default function Deals() {
     { top: "50%", left: "60%" },
     { top: "80%", left: "40%" },
   ];
+
+  const handleClick = async () => {
+    router.push("/coupon");
+    await sendWhatsAppFlow("+918851280284", "Vikas", "301");
+  };
 
   return (
     <Card className="w-full  overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 border-none mb-4 ">
@@ -62,7 +68,7 @@ export default function Deals() {
           <Button
             className="bg-pink-500 hover:bg-pink-600 text-white group relative overflow-hidden"
             size="lg"
-            onClick={() => router.push("/coupon")}
+            onClick={() => handleClick()}
           >
             <span className="relative flex items-center gap-2">
               CLICK HERE

@@ -1,11 +1,14 @@
 import React from "react";
 import Issues from "../modules/issues/components/issues";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const page = () => {
   return (
-    <div>
-      <Issues />
-    </div>
+    <ProtectedRoute>
+      <div>
+        <Issues />
+      </div>
+    </ProtectedRoute>
   );
 };
 

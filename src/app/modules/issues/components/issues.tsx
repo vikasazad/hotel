@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 
 export default function Issues() {
   const router = useRouter();
-  const services = [
+  const issues = [
     {
       title: "Cleanliness",
       icon: SprayCan,
@@ -82,25 +82,25 @@ export default function Issues() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {services.sort().map((service) => (
+          {issues.sort().map((issue) => (
             <Card
-              key={service.title}
+              key={issue.title}
               className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
               onClick={() =>
-                router.push(`issues/${service.title.toLocaleLowerCase()}`)
+                router.push(`issues/${issue.title.toLocaleLowerCase()}`)
               }
             >
               <CardContent className="p-3">
                 <div className="space-y-4">
                   <div
-                    className={`w-12 h-12 rounded-lg flex items-center justify-center ${service.color} transition-transform group-hover:scale-110`}
+                    className={`w-12 h-12 rounded-lg flex items-center justify-center ${issue.color} transition-transform group-hover:scale-110`}
                   >
-                    <service.icon className="w-6 h-6" />
+                    <issue.icon className="w-6 h-6" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-xl">{service.title}</h3>
+                    <h3 className="font-semibold text-xl">{issue.title}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {service.description}
+                      {issue.description}
                     </p>
                   </div>
                 </div>

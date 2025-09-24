@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { jwtVerify } from "jose";
+
+import { authenticateToken } from "@/app/modules/login/utils/login";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -43,10 +44,7 @@ export const useAuth = () => {
 
         console.log("Token found in localStorage, verifying...");
         // Verify the JWT token
-        const key = new TextEncoder().encode(secretKey);
-        const decoded = await jwtVerify(token, key, {
-          algorithms: ["HS256"],
-        });
+        const decoded = await authenticateToken(token, secretKey);
 
         if (decoded?.payload) {
           console.log("Token verified successfully");

@@ -26,7 +26,7 @@ import Script from "next/script";
 import React, { useState } from "react";
 import { cancelOrder, createOrder } from "../utils/mainAPI";
 const RecentOrders = ({ hotel }: any) => {
-  console.log(hotel);
+  // console.log(hotel);
   const [openOrders, setOpenOrders] = useState<string[]>([]);
   const [openServices, setOpenServices] = useState<string[]>([]);
   const [openIssues, setOpenIssues] = useState<string[]>([]);
@@ -94,7 +94,9 @@ const RecentOrders = ({ hotel }: any) => {
         />
       )}
       <div className="w-full max-w-xl mx-auto mt-6 mb-12 space-y-3">
-        <h2 className="text-xl font-bold mb-4">Orders</h2>
+        {hotel?.diningDetails?.orders?.length > 0 && (
+          <h2 className="text-xl font-bold mb-4">Orders</h2>
+        )}
         {hotel?.diningDetails?.orders?.length > 0 &&
           hotel?.diningDetails?.orders.map((service: any) => {
             const isOpen = openOrders.includes(service.orderId);
@@ -295,7 +297,9 @@ const RecentOrders = ({ hotel }: any) => {
             );
           })}
         {/* services */}
-        <h2 className="text-xl font-bold  mb-4">Services</h2>
+        {hotel?.servicesUsed?.length > 0 && (
+          <h2 className="text-xl font-bold  mb-4">Services</h2>
+        )}
         {hotel?.servicesUsed?.length > 0 &&
           hotel?.servicesUsed.map((service: any) => {
             const isOpen = openServices.includes(service.serviceId);
@@ -502,7 +506,9 @@ const RecentOrders = ({ hotel }: any) => {
               </Card>
             );
           })}
-        <h2 className="text-xl font-bold  mb-4">Issues</h2>
+        {Object.keys(hotel?.issuesReported).length > 0 && (
+          <h2 className="text-xl font-bold  mb-4">Issues</h2>
+        )}
         {hotel?.issuesReported &&
           Object.values(hotel?.issuesReported).map((service: any) => {
             const isOpen = openIssues.includes(service.issueId);

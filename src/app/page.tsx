@@ -1,5 +1,3 @@
-"use client";
-
 import Main from "./modules/main/components/main";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 

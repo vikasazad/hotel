@@ -261,6 +261,7 @@ export async function handleServiceRequest(
 ) {
   //send message to attendant
   //save the request in the database under bookingDetails
+  console.log("user", user, service, info, time);
   const phoneNumber = await findSpecialAttendant(user);
   const randomStr = (n: number) =>
     [...Array(n)]
@@ -318,6 +319,8 @@ export async function handleServiceRequest(
       });
     }
     return true;
+  } else {
+    return false;
   }
 }
 
@@ -445,5 +448,185 @@ async function storePendingAssignment(assignment: any) {
     console.log("Pending assignment stored:", assignment.orderId);
   } catch (error) {
     console.error("Error storing pending assignment:", error);
+  }
+}
+
+/**
+ * Sends a WhatsApp Flow to a specific phone number
+ * @param phoneNumber - The recipient's phone number (with country code)
+ * @param flowData - Optional custom flow data, uses default if not provided
+ * @returns Promise<boolean> - Success status of the operation
+ */
+export async function sendWhatsAppFlow(
+  phoneNumber: string,
+  guestName: string,
+  roomNo: string
+): Promise<boolean> {
+  try {
+    // Format phone number - remove any special characters and ensure proper format
+    const formattedPhone = phoneNumber.replace(/\D/g, "");
+    console.log("Sending WhatsApp Flow to:", formattedPhone);
+
+    const response = await fetch(
+      `https://graph.facebook.com/v22.0/616505061545755/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_WHATSAPP_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: formattedPhone,
+          type: "template",
+          template: {
+            name: "feedback_message",
+            language: { code: "en_US" },
+            components: [
+              {
+                type: "body",
+                parameters: [
+                  {
+                    type: "text",
+                    text: String(guestName),
+                  },
+                ],
+              },
+              {
+                type: "button",
+                sub_type: "quick_reply",
+                index: "0",
+                parameters: [
+                  {
+                    type: "text",
+                    text: "I'm happy so far",
+                  },
+                ],
+              },
+              {
+                type: "button",
+                sub_type: "flow",
+                index: "1",
+                parameters: [
+                  {
+                    type: "action",
+                    action: {
+                      flow_token: roomNo,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.messages && data.messages[0]) {
+      const messageId = data.messages[0].id;
+      console.log("WhatsApp  sent successfully. Message ID:", messageId);
+      return true;
+    } else {
+      console.error("Failed to send WhatsApp Flow:", data);
+      throw new Error(data.error?.message || "Failed to send flow");
+    }
+  } catch (error: any) {
+    console.error("WhatsApp  API Error:", error);
+    return false;
+  }
+}
+
+/**
+ * Check if user has already responded to satisfaction prompt for this stay
+ */
+export async function hasUserRespondedToday(
+  userEmail: string,
+  roomNo: string
+): Promise<boolean> {
+  try {
+    const docRef = doc(db, userEmail, "hotel");
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) return false;
+
+    const data = docSnap.data()?.live?.rooms;
+    if (!data) return false;
+
+    const todayDate = new Date().toISOString().split("T")[0];
+
+    // Use for...of loop to allow early return
+    for (const room of data) {
+      if (room.bookingDetails?.location === roomNo) {
+        const feedbacks = room.bookingDetails?.feedback || [];
+
+        // Use some() to check if any feedback matches today's date
+        const hasRespondedToday = feedbacks.some((feedback: any) => {
+          const feedbackDate = new Date(feedback.time)
+            .toISOString()
+            .split("T")[0];
+          return todayDate === feedbackDate;
+        });
+
+        if (hasRespondedToday) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error checking satisfaction response:", error);
+    return false;
+  }
+}
+
+/**
+ * Save satisfaction response to Firebase
+ */
+export async function saveSatisfactionResponse(
+  userEmail: string,
+  roomNo: string,
+  feedbackData: any
+): Promise<boolean> {
+  try {
+    const docRef = doc(db, userEmail, "hotel");
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return false;
+    const data = docSnap.data()?.live?.rooms;
+    const roomIndex = data?.findIndex(
+      (el: any) => el.bookingDetails?.location === roomNo
+    );
+    if (roomIndex === -1) return false;
+    const updatedData = [...data];
+
+    if (!updatedData[roomIndex].bookingDetails.feedback) {
+      updatedData[roomIndex].bookingDetails.feedback = [];
+    }
+    updatedData[roomIndex].bookingDetails.feedback.push(feedbackData);
+
+    await updateDoc(docRef, {
+      "live.rooms": updatedData,
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Error saving satisfaction response:", error);
+    return false;
+  }
+}
+
+export async function getFeedbackSettings(hotelId: string) {
+  try {
+    const docRef = doc(db, hotelId, "info");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data()?.business?.feedbackWindow || {};
+    }
+  } catch (error) {
+    console.error("Error fetching feedback settings from DB:", error);
+    return false;
   }
 }
