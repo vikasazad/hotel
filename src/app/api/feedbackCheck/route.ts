@@ -11,12 +11,25 @@ export async function GET() {
   console.log("settings", settings);
 
   const now = new Date();
-  const hour = now.getHours();
+  let hour: number;
+
+  // Check if we're in production (Vercel deployment)
+  const isProduction = process.env.WORK_ENV === "production";
+
+  if (isProduction) {
+    // In production, get UTC hour for comparison with UTC-converted DB times
+    hour = now.getUTCHours();
+  } else {
+    // In development, use local timezone
+    hour = now.getHours();
+  }
+  console.log("Environment:", isProduction ? "Production" : "Development");
+  console.log("Current hour:", hour, isProduction ? "(UTC)" : "(Local)");
 
   if (!settings?.startTime || !settings?.endTime) {
     // Fallback: fetch from DB
     settings = await getFeedbackSettings(hotelId);
-    console.log("settings", settings);
+    console.log("Fetched settings from DB:", settings);
 
     // Save to cache for 1 hour
     await redis.set("feedback", JSON.stringify(settings), {

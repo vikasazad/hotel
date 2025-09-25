@@ -623,7 +623,39 @@ export async function getFeedbackSettings(hotelId: string) {
     const docRef = doc(db, hotelId, "info");
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return docSnap.data()?.business?.feedbackWindow || {};
+      const feedbackWindow = docSnap.data()?.business?.feedbackWindow || {};
+
+      // Check if we're in production (Vercel deployment)
+      const isProduction = process.env.WORK_ENV === "production";
+
+      if (
+        isProduction &&
+        feedbackWindow.startTime !== undefined &&
+        feedbackWindow.endTime !== undefined
+      ) {
+        // Convert local time to UTC for production
+        // Assuming the hotel operates in IST (UTC+5:30)
+        // You can modify this timezone offset based on your hotel's location
+        const timezoneOffset = 5.5; // IST offset in hours
+
+        let utcStartTime = feedbackWindow.startTime - timezoneOffset;
+        let utcEndTime = feedbackWindow.endTime - timezoneOffset;
+
+        // Handle day boundary crossings
+        if (utcStartTime < 0) utcStartTime += 24;
+        if (utcEndTime < 0) utcEndTime += 24;
+        if (utcStartTime >= 24) utcStartTime -= 24;
+        if (utcEndTime >= 24) utcEndTime -= 24;
+
+        return {
+          startTime: Math.floor(utcStartTime),
+          endTime: Math.floor(utcEndTime),
+          originalStartTime: feedbackWindow.startTime,
+          originalEndTime: feedbackWindow.endTime,
+        };
+      }
+
+      return feedbackWindow;
     }
   } catch (error) {
     console.error("Error fetching feedback settings from DB:", error);
