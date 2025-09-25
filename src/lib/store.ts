@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import searchReducer from "./features/searchSlice";
 import addToOrderReducer from "./features/addToOrderSlice";
 import addBookingReducer from "./features/bookingInfoSlice";
-import activeFooterItemReducer from "./features/activeFooterCategory";
 import popupReducer from "./features/popupSlice";
 import hotelDataReducer from "./features/hotelDataSlice";
 
@@ -12,7 +11,6 @@ const store = () => {
       searchTerm: searchReducer,
       addToOrderData: addToOrderReducer,
       addBooking: addBookingReducer,
-      activeFooterItem: activeFooterItemReducer,
       popup: popupReducer,
       hotelData: hotelDataReducer,
       // firebaseManagementData: firebaseManagementDataReducer,

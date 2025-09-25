@@ -1,18 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+// import { Search } from "lucide-react";
+// import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useDispatch } from "react-redux";
-import { searchTerm } from "@/lib/features/searchSlice";
-import { AppDispatch } from "@/lib/store";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { useDispatch } from "react-redux";
+// import { searchTerm } from "@/lib/features/searchSlice";
+// import { AppDispatch } from "@/lib/store";
 
 export default function Header({ data }: { data: any }) {
-  const dispatch = useDispatch<AppDispatch>();
-  const [expanded, setExpanded] = React.useState(false);
+  // const dispatch = useDispatch<AppDispatch>();
+  // const [expanded, setExpanded] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
 
   React.useEffect(() => {
@@ -28,7 +28,7 @@ export default function Header({ data }: { data: any }) {
         <Avatar className="h-10 w-10">
           <AvatarImage alt="Restaurant logo" src={data.logo} />
         </Avatar>
-        <div
+        {/* <div
           className={cn(
             "relative flex items-center gap-2 rounded-full bg-background transition-all duration-500 shadow-md hover:shadow-lg ",
             expanded ? "w-[85%] px-3" : "h-10 w-10"
@@ -51,7 +51,7 @@ export default function Header({ data }: { data: any }) {
           >
             <Search className="h-4 w-4" />
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

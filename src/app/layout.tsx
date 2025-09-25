@@ -21,7 +21,8 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   const hideFooterRoutes = ["/login"];
-  const showFooter = !hideFooterRoutes.includes(pathname);
+  let showFooter = false;
+  showFooter = !hideFooterRoutes.includes(pathname);
   const storeRef = useRef<AppStore>();
   if (!storeRef.current) {
     storeRef.current = store();

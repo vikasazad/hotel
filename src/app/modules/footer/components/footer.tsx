@@ -1,12 +1,13 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Home, UtensilsCrossed, Settings, AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 
 const Footer = () => {
+  const url = usePathname();
   const router = useRouter();
   const diningLink = useSelector(
     (state: RootState) => state.addBooking.diningLink
@@ -21,7 +22,9 @@ const Footer = () => {
             className="flex flex-col items-center gap-1"
             onClick={() => router.push("/")}
           >
-            <Home className="w-5 h-5 text-blue-600" />
+            <Home
+              className={`w-5 h-5 ${url === "/" ? "text-blue-600" : "text-gray-600"}`}
+            />
             <span className="text-xs font-medium">Dashboard</span>
           </Button>
 
@@ -40,7 +43,9 @@ const Footer = () => {
             className="flex flex-col items-center gap-1"
             onClick={() => router.push("/services")}
           >
-            <Settings className="w-5 h-5 text-gray-600" />
+            <Settings
+              className={`w-5 h-5 ${url === "/services" ? "text-blue-600" : "text-gray-600"}`}
+            />
             <span className="text-xs font-medium">Services</span>
           </Button>
 
@@ -49,7 +54,9 @@ const Footer = () => {
             className="flex flex-col items-center gap-1"
             onClick={() => router.push("/issues")}
           >
-            <AlertCircle className="w-5 h-5 text-gray-600" />
+            <AlertCircle
+              className={`w-5 h-5 ${url === "/issues" ? "text-blue-600" : "text-gray-600"}`}
+            />
             <span className="text-xs font-medium">Issues</span>
           </Button>
         </div>

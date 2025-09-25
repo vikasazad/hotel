@@ -20,7 +20,7 @@ export async function GET() {
 
     // Save to cache for 1 hour
     await redis.set("feedback", JSON.stringify(settings), {
-      ex: 3600,
+      ex: 60,
     });
     if (settings?.startTime && settings?.endTime) {
       showFeedbackPrompt =
