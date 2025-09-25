@@ -28,8 +28,16 @@ export async function GET() {
     }
   } else {
     console.log("hour");
+    // await redis.set(
+    //   "feedback",
+    //   JSON.stringify({ endTime: "20", startTime: "19" }),
+    //   {
+    //     ex: 60,
+    //   }
+    // );
     showFeedbackPrompt =
       hour >= settings?.startTime && hour < settings?.endTime; // 7–8 PM
+    console.log("showFeedbackPrompt", showFeedbackPrompt, settings);
   }
 
   return Response.json({ showFeedbackPrompt });
