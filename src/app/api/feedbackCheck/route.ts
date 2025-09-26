@@ -1,5 +1,6 @@
 import { getFeedbackSettings } from "@/app/modules/main/utils/mainAPI";
 import { redis } from "@/lib/redis/redis";
+import { DateTime } from "luxon";
 
 export async function GET() {
   const hotelId = "vikumar.azad@gmail.com";
@@ -10,21 +11,32 @@ export async function GET() {
   let showFeedbackPrompt: boolean = false;
   console.log("settings", settings);
 
-  const now = new Date();
-  let hour: number;
-
   // Check if we're in production (Vercel deployment)
   const isProduction = process.env.WORK_ENV === "production";
 
+  // Define hotel timezone (you can make this configurable later)
+  const hotelTimezone = "Asia/Kolkata"; // IST timezone
+
+  let currentHour: number;
+  let currentTime: DateTime;
+
   if (isProduction) {
-    // In production, get UTC hour for comparison with UTC-converted DB times
-    hour = now.getUTCHours();
+    // In production, work with UTC time
+    currentTime = DateTime.utc();
+    currentHour = currentTime.hour;
   } else {
-    // In development, use local timezone
-    hour = now.getHours();
+    // In development, use hotel's local timezone
+    currentTime = DateTime.now().setZone(hotelTimezone);
+    currentHour = currentTime.hour;
   }
+
   console.log("Environment:", isProduction ? "Production" : "Development");
-  console.log("Current hour:", hour, isProduction ? "(UTC)" : "(Local)");
+  console.log("Current time:", currentTime.toISO());
+  console.log(
+    "Current hour:",
+    currentHour,
+    isProduction ? "(UTC)" : `(${hotelTimezone})`
+  );
 
   if (!settings?.startTime || !settings?.endTime) {
     // Fallback: fetch from DB
@@ -35,21 +47,14 @@ export async function GET() {
     await redis.set("feedback", JSON.stringify(settings), {
       ex: 60,
     });
-    if (settings?.startTime && settings?.endTime) {
+    if (settings?.startTime !== undefined && settings?.endTime !== undefined) {
       showFeedbackPrompt =
-        hour >= settings?.startTime && hour < settings?.endTime;
+        currentHour >= settings.startTime && currentHour < settings.endTime;
     }
   } else {
-    console.log("hour");
-    // await redis.set(
-    //   "feedback",
-    //   JSON.stringify({ endTime: "20", startTime: "19" }),
-    //   {
-    //     ex: 60,
-    //   }
-    // );
+    console.log("Using cached settings");
     showFeedbackPrompt =
-      hour >= settings?.startTime && hour < settings?.endTime; // 7–8 PM
+      currentHour >= settings.startTime && currentHour < settings.endTime;
     console.log("showFeedbackPrompt", showFeedbackPrompt, settings);
   }
 

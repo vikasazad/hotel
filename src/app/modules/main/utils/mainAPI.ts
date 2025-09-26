@@ -1,6 +1,7 @@
 import { db } from "@/config/db/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { SignJWT } from "jose";
+import { DateTime } from "luxon";
 
 export async function createOrder({ location, customer, orderData }: any) {
   const res = await fetch("/api/createOrder", {
@@ -628,30 +629,38 @@ export async function getFeedbackSettings(hotelId: string) {
       // Check if we're in production (Vercel deployment)
       const isProduction = process.env.WORK_ENV === "production";
 
+      // Define hotel timezone (you can make this configurable later)
+      const hotelTimezone = "Asia/Kolkata"; // IST timezone
+
       if (
         isProduction &&
         feedbackWindow.startTime !== undefined &&
         feedbackWindow.endTime !== undefined
       ) {
-        // Convert local time to UTC for production
-        // Assuming the hotel operates in IST (UTC+5:30)
-        // You can modify this timezone offset based on your hotel's location
-        const timezoneOffset = 5.5; // IST offset in hours
+        // Convert hotel local time to UTC for production using Luxon
+        const startTimeInHotel = DateTime.fromObject(
+          { hour: feedbackWindow.startTime, minute: 0 },
+          { zone: hotelTimezone }
+        );
+        const endTimeInHotel = DateTime.fromObject(
+          { hour: feedbackWindow.endTime, minute: 0 },
+          { zone: hotelTimezone }
+        );
 
-        let utcStartTime = feedbackWindow.startTime - timezoneOffset;
-        let utcEndTime = feedbackWindow.endTime - timezoneOffset;
-
-        // Handle day boundary crossings
-        if (utcStartTime < 0) utcStartTime += 24;
-        if (utcEndTime < 0) utcEndTime += 24;
-        if (utcStartTime >= 24) utcStartTime -= 24;
-        if (utcEndTime >= 24) utcEndTime -= 24;
+        // Convert to UTC
+        const startTimeUTC = startTimeInHotel.toUTC();
+        const endTimeUTC = endTimeInHotel.toUTC();
 
         return {
-          startTime: Math.floor(utcStartTime),
-          endTime: Math.floor(utcEndTime),
+          startTime: startTimeUTC.hour,
+          endTime: endTimeUTC.hour,
           originalStartTime: feedbackWindow.startTime,
           originalEndTime: feedbackWindow.endTime,
+          timezone: hotelTimezone,
+          debug: {
+            startTimeISO: startTimeUTC.toISO(),
+            endTimeISO: endTimeUTC.toISO(),
+          },
         };
       }
 
