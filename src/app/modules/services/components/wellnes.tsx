@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, IndianRupee } from "lucide-react";
 import { createWellnessOrder } from "../utils/servicesApi";
 import Script from "next/script";
 import { useSelector } from "react-redux";
@@ -193,8 +193,9 @@ export default function Wellness({ data, flag }: any) {
                     selectedServiceDetails.duration.minutes || 0
                   }m`}
                 </p>
-                <p>
-                  <strong>Price:</strong> ₹{selectedServiceDetails.price}
+                <p className="flex items-center ">
+                  <strong>Price:</strong> <IndianRupee className="w-4 h-4" />
+                  {selectedServiceDetails.price}
                 </p>
                 <p>
                   <strong>Start Time:</strong>{" "}

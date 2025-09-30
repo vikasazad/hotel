@@ -223,8 +223,9 @@ const RecentOrders = ({ hotel }: any) => {
                               <div>
                                 <span className="font-medium">Subtotal</span>
                               </div>
-                              <span className="text-green-600 font-semibold">
-                                ₹{service.payment.subtotal}
+                              <span className="text-green-600 font-semibold flex items-center ">
+                                <IndianRupee className="w-4 h-4" />
+                                {service.payment.subtotal}
                               </span>
                             </div>
                             {service.payment.gst.gstPercentage && (
@@ -232,8 +233,9 @@ const RecentOrders = ({ hotel }: any) => {
                                 <div>
                                   <span className="font-medium">{`Tax (${service.payment.gst.gstPercentage}%)`}</span>
                                 </div>
-                                <span className="text-green-600 font-semibold">
-                                  ₹{service.payment.gst.gstAmount}
+                                <span className="text-green-600 font-semibold flex items-center ">
+                                  <IndianRupee className="w-4 h-4" />
+                                  {service.payment.gst.gstAmount}
                                 </span>
                               </div>
                             )}
@@ -256,8 +258,9 @@ const RecentOrders = ({ hotel }: any) => {
                                   </Badge>
                                 )}
                               </div>
-                              <span className="text-green-600 font-semibold">
-                                ₹{service.payment.price}
+                              <span className="text-green-600 font-semibold flex items-center ">
+                                <IndianRupee className="w-4 h-4" />
+                                {service.payment.price}
                               </span>
                             </div>
                           </div>
@@ -433,8 +436,9 @@ const RecentOrders = ({ hotel }: any) => {
                               <div>
                                 <span className="font-medium">Subtotal</span>
                               </div>
-                              <span className="text-green-600 font-semibold">
-                                ₹{service.payment.subtotal}
+                              <span className="text-green-600 font-semibold flex items-center ">
+                                <IndianRupee className="w-4 h-4" />
+                                {service.payment.subtotal}
                               </span>
                             </div>
                             {service.payment.gst.gstPercentage && (
@@ -442,8 +446,9 @@ const RecentOrders = ({ hotel }: any) => {
                                 <div>
                                   <span className="font-medium">{`Tax (${service.payment.gst.gstPercentage}%)`}</span>
                                 </div>
-                                <span className="text-green-600 font-semibold">
-                                  ₹{service.payment.gst.gstAmount}
+                                <span className="text-green-600 font-semibold flex items-center ">
+                                  <IndianRupee className="w-4 h-4" />
+                                  {service.payment.gst.gstAmount}
                                 </span>
                               </div>
                             )}
@@ -466,8 +471,9 @@ const RecentOrders = ({ hotel }: any) => {
                                   </Badge>
                                 )}
                               </div>
-                              <span className="text-green-600 font-semibold">
-                                ₹{service.payment.price}
+                              <span className="text-green-600 font-semibold flex items-center ">
+                                <IndianRupee className="w-4 h-4" />
+                                {service.payment.price}
                               </span>
                             </div>
                           </div>

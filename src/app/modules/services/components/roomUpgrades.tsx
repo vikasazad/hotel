@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, IndianRupee } from "lucide-react";
 import Script from "next/script";
 import { createServiceUpdateOrder } from "../utils/servicesApi";
 
@@ -88,10 +88,16 @@ export default function RoomUpgrades({ data, flag }: any) {
               </Select>
               {selectedRoom && (
                 <div className="space-y-2">
-                  <p>Current Price: ₹{selectedRoom.currentPrice} /night</p>
-                  <p>Upgrade Price: ₹{selectedRoom.updatedPrice} /night</p>
-                  <p className="font-semibold">
-                    You save: ₹
+                  <p className="flex items-center ">
+                    Current Price: <IndianRupee className="w-4 h-4" />
+                    {selectedRoom.currentPrice} /night
+                  </p>
+                  <p className="flex items-center ">
+                    Upgrade Price: <IndianRupee className="w-4 h-4" />
+                    {selectedRoom.updatedPrice} /night
+                  </p>
+                  <p className="font-semibold flex items-center ">
+                    You save: <IndianRupee className="w-4 h-4" />
                     {selectedRoom.currentPrice - selectedRoom.updatedPrice}
                   </p>
                 </div>

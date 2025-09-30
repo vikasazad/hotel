@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Copy, Sparkles, Tag } from "lucide-react";
+import { ArrowLeft, Copy, IndianRupee, Sparkles, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -87,9 +87,14 @@ export default function Coupon() {
                             transform: "rotate(180deg)",
                           }}
                         >
-                          {data.type === "percentage"
-                            ? data.amount
-                            : `₹${data.amount}`}
+                          {data.type === "percentage" ? (
+                            data.amount
+                          ) : (
+                            <div className="flex items-center ">
+                              <IndianRupee className="w-4 h-4" />
+                              {data.amount}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -123,8 +128,8 @@ export default function Coupon() {
                               : `Save ₹${data.amount} on the Order`}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Use code TRYNEW & get 30% off on orders above $159.
-                            Maximum discount: $70
+                            Use code TRYNEW & get 30% off on orders above ₹159.
+                            Maximum discount: ₹70
                           </p>
                         </div>
                       </div>

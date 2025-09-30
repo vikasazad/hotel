@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, IndianRupee } from "lucide-react";
 
 export default function Tours({ data, flag }: any) {
   console.log("DATA", data);
@@ -79,11 +79,12 @@ export default function Tours({ data, flag }: any) {
               <p className="mb-2">
                 <strong>End Time:</strong> {data[selectedTour][0].endTime}
               </p>
-              <p className="mb-2">
-                <strong>Price:</strong> ${data[selectedTour][0].price}
+              <p className="mb-2 flex items-center ">
+                <strong>Price:</strong> <IndianRupee className="w-4 h-4" />
+                {data[selectedTour][0].price}
               </p>
               <p className="mb-2">
-                <strong>Booking Policy:</strong>{" "}
+                <strong>Booking Policy:</strong>
                 {data[selectedTour][0].bookingPolicy}
               </p>
             </CardContent>

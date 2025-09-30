@@ -11,6 +11,7 @@ import { RootState } from "@/lib/store";
 import QuickServices from "./quickServices";
 import { getAuthData } from "@/lib/redis/redisData";
 import { authenticateToken } from "../../login/utils/login";
+import RecentOrders from "./recentOrders";
 
 // Import test utilities for development/testing
 
@@ -86,8 +87,14 @@ const Main = () => {
       <Header data={data.info} />
       <h1 className="text-2xl font-extrabold px-2 py-2">Dashboard</h1>
       <Deals />
+      <Dashboard
+        user={user}
+        hotel={data.hotel}
+        info={data.info}
+        email={user?.email}
+      />
       <QuickServices user={user} requests={data.hotel} />
-      <Dashboard hotel={data.hotel} info={data.info} email={user?.email} />
+      <RecentOrders hotel={data.hotel} />
     </div>
   );
 };

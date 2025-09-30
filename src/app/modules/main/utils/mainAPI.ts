@@ -2,6 +2,7 @@ import { db } from "@/config/db/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { SignJWT } from "jose";
 import { DateTime } from "luxon";
+import { sendWhatsAppTextMessage } from "../../services/utils/servicesApi";
 
 export async function createOrder({ location, customer, orderData }: any) {
   const res = await fetch("/api/createOrder", {
@@ -263,7 +264,7 @@ export async function handleServiceRequest(
   //send message to attendant
   //save the request in the database under bookingDetails
   console.log("user", user, service, info, time);
-  const phoneNumber = await findSpecialAttendant(user);
+  const phoneNumber = await findStaff(user, "specialattendant");
   const randomStr = (n: number) =>
     [...Array(n)]
       .map(
@@ -278,7 +279,7 @@ export async function handleServiceRequest(
     const message = await sendMessageToAttendant(
       user,
       id,
-      phoneNumber,
+      phoneNumber[0].contact,
       service,
       info,
       time,
@@ -325,13 +326,61 @@ export async function handleServiceRequest(
   }
 }
 
-async function findSpecialAttendant(user: any) {
+async function findStaff(user: any, role: string) {
   const docRef = doc(db, user.email, "info");
   const docSnap = await getDoc(docRef);
   const data = docSnap.data()?.staff;
 
-  const staff = data.find((el: any) => el.role === "specialattendant");
-  return staff?.contact;
+  const staffMembers = data.filter((el: any) => el.role === role);
+  return staffMembers;
+}
+async function findStaffByRole(user: any, roles: string[]) {
+  const docRef = doc(db, user.email, "info");
+  const docSnap = await getDoc(docRef);
+  const data = docSnap.data()?.staff;
+
+  const staffMembers = data.filter(
+    (el: any) =>
+      roles.includes(el.role) && el.status === "online" && el.active === true
+  );
+  if (staffMembers.length === 0) return false;
+
+  // Sort staff by number of orders for each role
+  const sortedStaff = assignAttendantSequentially(staffMembers);
+  if (!sortedStaff) return false;
+
+  // Get first staff member for each role
+  const finalStaff = roles
+    .map((role) => {
+      const staffForRole = staffMembers.filter((el: any) => el.role === role);
+      if (staffForRole.length === 0) return null;
+      return assignAttendantSequentially(staffForRole);
+    })
+    .filter((staff) => staff !== null);
+
+  return finalStaff;
+}
+
+interface StaffMember {
+  name: string;
+  contact: string;
+  role: string;
+  status: string;
+  active: boolean;
+  orders: string[];
+}
+export function assignAttendantSequentially(
+  availableStaff: StaffMember[]
+): StaffMember | null {
+  if (availableStaff.length === 0) return null;
+
+  // Sort staff by number of current orders (ascending)
+  const sortedStaff = [...availableStaff].sort(
+    (a, b) => a.orders.length - b.orders.length
+  );
+
+  // Return the staff with the least number of orders
+  return sortedStaff[0];
 }
 
 export async function sendMessageToAttendant(
@@ -668,6 +717,37 @@ export async function getFeedbackSettings(hotelId: string) {
     }
   } catch (error) {
     console.error("Error fetching feedback settings from DB:", error);
+    return false;
+  }
+}
+
+export const getBusinessInfo = async (email: string) => {
+  const docRef = doc(db, email, "info");
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data().business;
+  }
+  return false;
+};
+
+export async function handleUserCheckOut(user: any, roomNo: string) {
+  try {
+    const phoneNumbers: any = await findStaffByRole(user, [
+      "attendant",
+      "receptionist",
+    ]);
+    // console.log("phoneNumbers", phoneNumbers);
+    if (phoneNumbers.length === 0) return false;
+    // return phoneNumbers;
+    const message = `Hey! Room No-${roomNo} has requested for check out. Please reachout to reception to get the check out done.`;
+    phoneNumbers?.forEach(async (el: StaffMember) => {
+      const messageSent = await sendWhatsAppTextMessage(el.contact, message);
+      if (!messageSent) {
+        console.error("Error sending message to attendant:", el.contact);
+      }
+    });
+  } catch (error) {
+    console.error("Error handling check out:", error);
     return false;
   }
 }

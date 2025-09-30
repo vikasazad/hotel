@@ -9,7 +9,14 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Users, CreditCard, ArrowLeft, Phone, ArrowRight } from "lucide-react";
+import {
+  Users,
+  CreditCard,
+  ArrowLeft,
+  Phone,
+  ArrowRight,
+  IndianRupee,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -152,8 +159,9 @@ export default function RoomDetail() {
                   <span className="text-sm text-muted-foreground">
                     {`Room (${BookingData?.bookingDetails?.nights} night × ${BookingData?.bookingDetails?.noOfGuests} guests)`}
                   </span>
-                  <span className="font-medium">
-                    ₹{BookingData?.bookingDetails?.payment?.subtotal}
+                  <span className="font-medium flex items-center ">
+                    <IndianRupee className="w-4 h-4" />
+                    {BookingData?.bookingDetails?.payment?.subtotal}
                   </span>
                 </div>
                 {BookingData?.bookingDetails?.payment?.gst?.gstPercentage && (
@@ -161,8 +169,9 @@ export default function RoomDetail() {
                     <span className="text-sm text-muted-foreground">
                       {`Tax (${BookingData?.bookingDetails?.payment?.gst?.gstPercentage}%)`}
                     </span>
-                    <span className="font-medium">
-                      ₹{BookingData?.bookingDetails?.payment?.gst?.gstAmount}
+                    <span className="font-medium flex items-center ">
+                      <IndianRupee className="w-4 h-4" />
+                      {BookingData?.bookingDetails?.payment?.gst?.gstAmount}
                     </span>
                   </div>
                 )}
@@ -175,8 +184,9 @@ export default function RoomDetail() {
                         )
                       </span>
                     </span>
-                    <span className="font-medium">
-                      -₹{BookingData?.bookingDetails?.payment?.discount?.amount}
+                    <span className="font-medium flex items-center ">
+                      -<IndianRupee className="w-4 h-4" />
+                      {BookingData?.bookingDetails?.payment?.discount?.amount}
                     </span>
                   </div>
                 )}
@@ -204,8 +214,9 @@ export default function RoomDetail() {
                   </Badge>
                 )}
               </div>
-              <span className="text-green-600 text-lg font-semibold">
-                ₹{BookingData?.bookingDetails?.payment?.price}
+              <span className="text-green-600 text-lg font-semibold flex items-center ">
+                <IndianRupee className="w-4 h-4" />
+                {BookingData?.bookingDetails?.payment?.totalPrice}
               </span>
             </div>
           </div>

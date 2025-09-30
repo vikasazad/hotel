@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, IndianRupee } from "lucide-react";
 import Script from "next/script";
 import { createTransportationOrder } from "../utils/servicesApi";
 import { useSelector } from "react-redux";
@@ -87,7 +87,10 @@ export default function Transportation({ data, flag }: any) {
                 </h2>
                 <p className="mb-2">{data[selectedService][0].description}</p>
                 <ul className="list-disc list-inside mb-2">
-                  <li>Price: ₹{data[selectedService][0].price}</li>
+                  <li className="flex items-center ">
+                    Price: <IndianRupee className="w-4 h-4" />
+                    {data[selectedService][0].price}
+                  </li>
                   <li>Duration: {data[selectedService][0].duration}</li>
                   <li>
                     Booking Policy: {data[selectedService][0].bookingPolicy}

@@ -1,19 +1,28 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader } from "@/components/ui/card";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { generateToken } from "../utils/mainAPI";
+import { generateToken, handleUserCheckOut } from "../utils/mainAPI";
 import { useDispatch } from "react-redux";
 import { addData, addDiningLink } from "@/lib/features/bookingInfoSlice";
 import { AppDispatch } from "@/lib/store";
-import RecentOrders from "./recentOrders";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
-const Dashboard = ({ hotel, info, email }: any) => {
+import Link from "next/link";
+
+const Dashboard = ({ user, hotel, info, email }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     dispatch(addData(hotel));
 
@@ -37,9 +46,13 @@ const Dashboard = ({ hotel, info, email }: any) => {
     });
   }, [dispatch, hotel, email]);
 
+  const handleCheckOut = async () => {
+    await handleUserCheckOut(user, hotel?.bookingDetails?.location);
+  };
+
   return (
     <>
-      <Card className="w-full max-w-lg shadow-lg mb-10">
+      <Card className="w-full max-w-lg shadow-lg ">
         <CardHeader className="space-y-2 p-4">
           <div className="flex justify-between items-center">
             <div>
@@ -57,7 +70,7 @@ const Dashboard = ({ hotel, info, email }: any) => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg">
+          <div className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg">
             <div>
               <div className="text-sm text-gray-500">CHECK IN</div>
               <div className="font-medium">
@@ -86,6 +99,53 @@ const Dashboard = ({ hotel, info, email }: any) => {
               <ArrowRight className="h-5 w-5" />
             </Button>
           </div>
+          <div
+            className="w-full flex items-center justify-center  gap-2  py-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold text-base rounded-lg shadow-md  hover:opacity-90 active:scale-95 transition-all"
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <DoorOpen className="w-5 h-5" />
+            Ready to Check Out? Get 10% Off*
+          </div>
+
+          <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent className="rounded-t-2xl bg-[#f0f0f0] ">
+              <DrawerDescription></DrawerDescription>
+              <DrawerHeader className="text-left pb-1 pt-1">
+                <DrawerTitle className="text-md font-semibold">
+                  Claim Your 10% Discount
+                </DrawerTitle>
+              </DrawerHeader>
+              <div className="text-md text-gray-500 px-4 py-2">
+                Share a quick review about your stay and enjoy 10% off your
+                final bill. It only takes a minute — your feedback helps us
+                improve your next visit!
+              </div>
+              <div className=" px-4 pb-4 ">
+                <Button
+                  variant="outline"
+                  className="w-full mb-3"
+                  onClick={() => {
+                    handleCheckOut();
+                  }}
+                >
+                  Skip for Now, Check Out
+                </Button>
+                <Link href={info.reviewLink} target="_blank">
+                  <Button
+                    variant="default"
+                    className="w-full "
+                    onClick={() => {
+                      handleCheckOut();
+                    }}
+                  >
+                    Share Feedback & Get 10% Off
+                  </Button>
+                </Link>
+              </div>
+            </DrawerContent>
+          </Drawer>
         </CardHeader>
 
         {/* <CardContent className="space-y-2 px-4 pb-4"> */}
@@ -403,7 +463,6 @@ const Dashboard = ({ hotel, info, email }: any) => {
             )} */}
         {/* </CardContent> */}
       </Card>
-      <RecentOrders hotel={hotel} />
     </>
   );
 };

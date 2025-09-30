@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, IndianRupee } from "lucide-react";
 
 const Laundry = ({ data, flag }: any) => {
   console.log("DATA", data);
@@ -89,8 +89,9 @@ const Laundry = ({ data, flag }: any) => {
                     {data[selectedService][0].typeName}
                   </h2>
                   <p className="mb-2">{data[selectedService][0].description}</p>
-                  <p className="font-bold">
-                    Price: ₹{data[selectedService][0].price}
+                  <p className="font-bold flex items-center ">
+                    Price: <IndianRupee className="w-4 h-4" />
+                    {data[selectedService][0].price}
                   </p>
                   <p>
                     Minimum Time: {data[selectedService][0].minTime.hours}{" "}
