@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import QuickServices from "./quickServices";
-import { getAuthData } from "@/lib/redis/redisData";
+// import { getAuthData } from "@/lib/redis/redisData";
 import { authenticateToken } from "../../login/utils/login";
 import RecentOrders from "./recentOrders";
 
@@ -32,10 +32,10 @@ const Main = () => {
       return;
     }
 
-    async function fetchAuthData() {
-      const data = await getAuthData();
-      console.log("dataaaaaaaaaaaaaa", data);
-    }
+    // async function fetchAuthData() {
+    //   const data = await getAuthData();
+    //   console.log("dataaaaaaaaaaaaaa", data);
+    // }
 
     async function verifyAndSetupListener() {
       try {
@@ -64,7 +64,7 @@ const Main = () => {
       }
     }
 
-    fetchAuthData();
+    // fetchAuthData();
     verifyAndSetupListener();
   }, [router, user]);
 
@@ -84,8 +84,8 @@ const Main = () => {
 
   return (
     <div className="p-2">
-      <Header data={data.info} />
-      <h1 className="text-2xl font-extrabold px-2 py-2">Dashboard</h1>
+      {/* <Header data={data.info} /> */}
+      <h1 className="text-3xl font-extrabold px-2 py-2">Dashboard</h1>
       <Deals />
       <Dashboard
         user={user}

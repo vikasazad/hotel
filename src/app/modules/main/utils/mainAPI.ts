@@ -4,7 +4,7 @@ import { SignJWT } from "jose";
 import { DateTime } from "luxon";
 import { sendWhatsAppTextMessage } from "../../services/utils/servicesApi";
 
-export async function createOrder({ location, customer, orderData }: any) {
+export async function createOrder({ location, customer, orderData, id }: any) {
   const res = await fetch("/api/createOrder", {
     method: "POST",
     body: JSON.stringify({ amount: orderData?.payment?.price * 100 }),
@@ -48,7 +48,8 @@ export async function createOrder({ location, customer, orderData }: any) {
           location,
           orderData,
           response.razorpay_order_id,
-          response.razorpay_payment_id
+          response.razorpay_payment_id,
+          id
         );
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
@@ -70,7 +71,8 @@ export async function sendHotelOrder(
   location: any,
   orderData: any,
   orderId: string,
-  paymentId: string
+  paymentId: string,
+  id:string
 ) {
   console.log("HERE");
 
@@ -110,7 +112,7 @@ export async function sendHotelOrder(
           roomFound = true;
 
           // Find and update the matching order's payment details
-          if (room.diningDetails?.orders) {
+          if (room.diningDetails?.orders.length > 0 && id.startsWith("BOK")) {
             room.diningDetails.orders = room.diningDetails.orders.map(
               (order: any) => {
                 if (order.orderId === orderData.orderId) {
@@ -131,6 +133,28 @@ export async function sendHotelOrder(
               }
             );
           }
+          if (room.servicesUsed.length > 0 && id.startsWith("SE")) {
+  room.servicesUsed = room.servicesUsed.map((service: any) => {
+    if (service.serviceId === id) {
+      return {
+        ...service,
+        serviceId: 'paid',
+        payment: {
+          ...service.payment,
+          paymentStatus: "paid",
+          mode: "online",
+          paymentId: paymentId,
+          timeOfTransaction: new Date().toISOString(),
+          transctionId: orderId,
+          paymentType: "single",
+        },
+      };
+    }
+    return service;
+  });
+}
+
+
 
           // Add the new transaction
           room.transctions = [...(room.transctions || []), newTransaction];

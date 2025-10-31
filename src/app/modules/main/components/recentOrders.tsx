@@ -26,7 +26,7 @@ import Script from "next/script";
 import React, { useState } from "react";
 import { cancelOrder, createOrder } from "../utils/mainAPI";
 const RecentOrders = ({ hotel }: any) => {
-  // console.log(hotel);
+  console.log("hotel", hotel);
   const [openOrders, setOpenOrders] = useState<string[]>([]);
   const [openServices, setOpenServices] = useState<string[]>([]);
   const [openIssues, setOpenIssues] = useState<string[]>([]);
@@ -65,15 +65,16 @@ const RecentOrders = ({ hotel }: any) => {
         return <Clock className="w-4 h-4 mr-2" />;
     }
   };
-  const handlePayment = (hotel: any, service: any) => {
+  const handlePayment = (hotel: any, service: any, id:string) => {
     console.log("clicked");
-    console.log("INFO", hotel, service);
+    console.log("INFO", hotel, service, id);
 
     setLoadScript(true);
     createOrder({
       location: hotel.bookingDetails?.location,
       customer: hotel.bookingDetails?.customer,
       orderData: service,
+      id:id
     });
   };
 
@@ -112,7 +113,7 @@ const RecentOrders = ({ hotel }: any) => {
                   <CollapsibleTrigger asChild>
                     <CardHeader className="cursor-pointer bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 p-2 hover:from-amber-100 hover:via-orange-100 hover:to-amber-100 transition-all duration-300 border-b border-amber-100">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
                           <div className="relative">
                             <div className="w-9 h-9 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-xl">
                               <Utensils className="w-6 h-6 text-white" />
@@ -211,7 +212,7 @@ const RecentOrders = ({ hotel }: any) => {
                               </div>
                               <div className="flex items-center ">
                                 <IndianRupee className="w-4 h-4 text-green-600" />
-                                <span className="text-xl font-bold text-gray-900">
+                                <span className="text-xl font-bold text-green-600">
                                   {item.price}
                                 </span>
                               </div>
@@ -219,6 +220,27 @@ const RecentOrders = ({ hotel }: any) => {
                           ))}
                           <Separator className="mb-2" />
                           <div className="space-y-2">
+                            {service.payment.discount.length > 0 &&
+                              service.payment.discount[0].discountAmount > 0 &&
+                              service.payment.discount.map((discount: any) => (
+                                <div
+                                  className="flex justify-between items-center"
+                                  key={discount.code}
+                                >
+                                  <div>
+                                    <span className="font-medium">
+                                      Discount{" "}
+                                      <Badge variant="outline" className="mx-2">
+                                        {discount.code}
+                                      </Badge>
+                                    </span>
+                                  </div>
+                                  <span className="text-green-600 font-semibold flex items-center ">
+                                    <IndianRupee className="w-4 h-4" />
+                                    {service.payment.subtotal}
+                                  </span>
+                                </div>
+                              ))}
                             <div className="flex justify-between items-center">
                               <div>
                                 <span className="font-medium">Subtotal</span>
@@ -284,7 +306,7 @@ const RecentOrders = ({ hotel }: any) => {
                               disabled={
                                 service.payment.paymentStatus === "paid"
                               }
-                              onClick={() => handlePayment(hotel, service)}
+                              onClick={() => handlePayment(hotel, service, service.orderId)}
                             >
                               {service.payment.paymentStatus === "pending"
                                 ? "Pay Now"
@@ -497,7 +519,7 @@ const RecentOrders = ({ hotel }: any) => {
                               disabled={
                                 service.payment.paymentStatus === "paid"
                               }
-                              onClick={() => handlePayment(hotel, service)}
+                              onClick={() => handlePayment(hotel, service, service.serviceId)}
                             >
                               {service.payment.paymentStatus === "pending"
                                 ? "Pay Now"

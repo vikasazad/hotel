@@ -25,9 +25,9 @@ export default function Header({ data }: { data: any }) {
   return (
     <div className="mx-auto max-w-6xl px-2">
       <div className="flex items-center justify-between py-2">
-        <Avatar className="h-10 w-10">
+        {/* <Avatar className="h-10 w-10">
           <AvatarImage alt="Restaurant logo" src={data.logo} />
-        </Avatar>
+        </Avatar> */}
         {/* <div
           className={cn(
             "relative flex items-center gap-2 rounded-full bg-background transition-all duration-500 shadow-md hover:shadow-lg ",
