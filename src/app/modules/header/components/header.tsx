@@ -3,7 +3,7 @@
 import * as React from "react";
 // import { Search } from "lucide-react";
 // import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+// import { Avatar, AvatarImage } from "@/components/ui/avatar";
 // import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 // import { useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 // import { AppDispatch } from "@/lib/store";
 
 export default function Header({ data }: { data: any }) {
+  console.log(data)
   // const dispatch = useDispatch<AppDispatch>();
   // const [expanded, setExpanded] = React.useState(false);
   const [hydrated, setHydrated] = React.useState(false);
