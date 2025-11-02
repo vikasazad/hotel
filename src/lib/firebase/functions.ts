@@ -23,6 +23,7 @@ export function getHotelDataLive(
 
         const hotelData = docSnapMenu.data().live;
         const infoData = docSnapInfo.data().hotel;
+        const tax = docSnapInfo.data().business?.gstTax;
 
         // Find the room with matching phone number
         const matchingRoom = hotelData.rooms.find(
@@ -31,7 +32,7 @@ export function getHotelDataLive(
 
         callback({
           hotel: matchingRoom || null,
-          info: infoData,
+          info: { infoData: infoData, tax: tax },
         });
       });
 

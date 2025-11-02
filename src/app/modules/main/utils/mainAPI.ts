@@ -72,7 +72,7 @@ export async function sendHotelOrder(
   orderData: any,
   orderId: string,
   paymentId: string,
-  id:string
+  id: string
 ) {
   console.log("HERE");
 
@@ -134,27 +134,25 @@ export async function sendHotelOrder(
             );
           }
           if (room.servicesUsed.length > 0 && id.startsWith("SE")) {
-  room.servicesUsed = room.servicesUsed.map((service: any) => {
-    if (service.serviceId === id) {
-      return {
-        ...service,
-        serviceId: 'paid',
-        payment: {
-          ...service.payment,
-          paymentStatus: "paid",
-          mode: "online",
-          paymentId: paymentId,
-          timeOfTransaction: new Date().toISOString(),
-          transctionId: orderId,
-          paymentType: "single",
-        },
-      };
-    }
-    return service;
-  });
-}
-
-
+            room.servicesUsed = room.servicesUsed.map((service: any) => {
+              if (service.serviceId === id) {
+                return {
+                  ...service,
+                  serviceId: "paid",
+                  payment: {
+                    ...service.payment,
+                    paymentStatus: "paid",
+                    mode: "online",
+                    paymentId: paymentId,
+                    timeOfTransaction: new Date().toISOString(),
+                    transctionId: orderId,
+                    paymentType: "single",
+                  },
+                };
+              }
+              return service;
+            });
+          }
 
           // Add the new transaction
           room.transctions = [...(room.transctions || []), newTransaction];
@@ -288,7 +286,7 @@ export async function handleServiceRequest(
   //send message to attendant
   //save the request in the database under bookingDetails
   console.log("user", user, service, info, time);
-  const phoneNumber = await findStaff(user, "specialattendant");
+  const phoneNumber = await findStaff(user, "concierge");
   const randomStr = (n: number) =>
     [...Array(n)]
       .map(
@@ -299,11 +297,12 @@ export async function handleServiceRequest(
       )
       .join("");
   const id = randomStr(6);
+  // console.log("phoneNumber", phoneNumber);
   if (phoneNumber) {
     const message = await sendMessageToAttendant(
       user,
       id,
-      phoneNumber[0].contact,
+      phoneNumber.contact,
       service,
       info,
       time,
@@ -356,7 +355,8 @@ async function findStaff(user: any, role: string) {
   const data = docSnap.data()?.staff;
 
   const staffMembers = data.filter((el: any) => el.role === role);
-  return staffMembers;
+  if (staffMembers.length === 0) return false;
+  return assignAttendantSequentially(staffMembers);
 }
 async function findStaffByRole(user: any, roles: string[]) {
   const docRef = doc(db, user.email, "info");

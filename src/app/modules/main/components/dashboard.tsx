@@ -19,12 +19,12 @@ import {
 
 import Link from "next/link";
 
-const Dashboard = ({ user, hotel, info, email }: any) => {
+const Dashboard = ({ user, hotel, info, email, tax }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    dispatch(addData(hotel));
+    dispatch(addData({ ...hotel, tax: tax }));
 
     generateToken(
       email,
@@ -52,7 +52,10 @@ const Dashboard = ({ user, hotel, info, email }: any) => {
 
   return (
     <>
-      <Card className="w-full max-w-lg shadow-lg ">
+      <Card
+        className="w-full max-w-lg shadow-lg "
+        data-onboarding="details-card"
+      >
         <CardHeader className="space-y-2 p-4">
           <div className="flex justify-between items-center">
             <div>
@@ -75,7 +78,8 @@ const Dashboard = ({ user, hotel, info, email }: any) => {
               <div className="text-sm text-gray-500">CHECK IN</div>
               <div className="font-medium">
                 {new Date(hotel?.bookingDetails?.checkIn).toLocaleDateString(
-                  "en-GB"
+                  "en-GB",
+                  { day: "numeric", month: "short", year: "numeric" }
                 )}
               </div>
             </div>
@@ -84,13 +88,15 @@ const Dashboard = ({ user, hotel, info, email }: any) => {
               <div className="text-sm text-gray-500">CHECK OUT</div>
               <div className="font-medium">
                 {new Date(hotel?.bookingDetails?.checkOut).toLocaleDateString(
-                  "en-GB"
+                  "en-GB",
+                  { day: "numeric", month: "short", year: "numeric" }
                 )}
               </div>
             </div>
             <Button
               variant="ghost"
               className="rounded-lg p-2 h-10 w-10 bg-green-100"
+              data-onboarding="room-info-button"
               onClick={() => {
                 dispatch(addData(hotel));
                 router.push("/room");
@@ -101,12 +107,13 @@ const Dashboard = ({ user, hotel, info, email }: any) => {
           </div>
           <div
             className="w-full flex items-center justify-center  gap-2  py-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold text-base rounded-lg shadow-md  hover:opacity-90 active:scale-95 transition-all"
+            data-onboarding="checkout-button"
             onClick={() => {
               setOpen(true);
             }}
           >
             <DoorOpen className="w-5 h-5" />
-            Ready to Check Out? Get 10% Off*
+            Checking Out? Get 10% Off*
           </div>
 
           <Drawer open={open} onOpenChange={setOpen}>

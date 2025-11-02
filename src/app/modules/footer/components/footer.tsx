@@ -32,6 +32,7 @@ const Footer = () => {
             <Button
               variant="ghost"
               className="flex flex-col items-center gap-1"
+              data-onboarding="dining-button"
             >
               <UtensilsCrossed className="w-5 h-5 text-gray-600" />
               <span className="text-xs font-medium">Dining</span>
@@ -41,6 +42,7 @@ const Footer = () => {
           <Button
             variant="ghost"
             className="flex flex-col items-center gap-1"
+            data-onboarding="services-button"
             onClick={() => router.push("/services")}
           >
             <Settings
@@ -52,6 +54,7 @@ const Footer = () => {
           <Button
             variant="ghost"
             className="flex flex-col items-center gap-1"
+            data-onboarding="issues-button"
             onClick={() => router.push("/issues")}
           >
             <AlertCircle

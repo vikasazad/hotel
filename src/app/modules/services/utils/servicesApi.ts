@@ -1,5 +1,6 @@
 import { db } from "@/config/db/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { redirect } from "next/navigation";
 
 export function calculateTotal(ordereditems: any) {
   return ordereditems.reduce((total: any, item: any) => {
@@ -7,10 +8,98 @@ export function calculateTotal(ordereditems: any) {
     return total + price * item.count;
   }, 0);
 }
-export function calculateTax(total: any, tax: string) {
-  const rounded = Math.round((total * Number(tax)) / 100);
-  return rounded;
-}
+
+export const calculateTax = (
+  pricePerNight: number,
+  subtotalAmount: number,
+  taxType: string,
+  taxDetails: any
+) => {
+  const taxTypeData = taxDetails[taxType];
+  if (!taxTypeData) {
+    throw new Error(`Invalid tax type: ${taxType}`);
+  }
+
+  let gstPercentage = 0;
+
+  // Check if there's an "all" key for flat rate
+  if (taxTypeData["all"]) {
+    gstPercentage = parseFloat(taxTypeData["all"]);
+  } else {
+    // Look for price-based keys dynamically
+    const priceKeys = Object.keys(taxTypeData).filter(
+      (key) =>
+        key.includes("below") ||
+        key.includes("above") ||
+        key.includes("under") ||
+        key.includes("over")
+    );
+
+    if (priceKeys.length === 0) {
+      throw new Error(`No valid tax rate found for tax type: ${taxType}`);
+    }
+
+    // Process each price-based key to find the applicable rate
+    for (const key of priceKeys) {
+      const lowerKey = key.toLowerCase();
+
+      // Extract price threshold from the key
+      const priceMatch = key.match(/(\d+(?:\.\d+)?)/);
+      if (!priceMatch) continue;
+
+      const threshold = parseFloat(priceMatch[1]);
+
+      // Check if price/night falls within this bracket
+      if (lowerKey.includes("below") || lowerKey.includes("under")) {
+        if (pricePerNight <= threshold) {
+          gstPercentage = parseFloat(taxTypeData[key]);
+          break;
+        }
+      } else if (lowerKey.includes("above") || lowerKey.includes("over")) {
+        if (pricePerNight > threshold) {
+          gstPercentage = parseFloat(taxTypeData[key]);
+          break;
+        }
+      }
+    }
+
+    // If no bracket matched, try to find a default or fallback rate
+    if (gstPercentage === 0) {
+      // Look for the lowest threshold as fallback
+      const sortedKeys = priceKeys.sort((a, b) => {
+        const aPrice = parseFloat(a.match(/(\d+(?:\.\d+)?)/)?.[1] || "0");
+        const bPrice = parseFloat(b.match(/(\d+(?:\.\d+)?)/)?.[1] || "0");
+        return aPrice - bPrice;
+      });
+
+      if (sortedKeys.length > 0) {
+        gstPercentage = parseFloat(taxTypeData[sortedKeys[0]]);
+      }
+    }
+  }
+
+  if (gstPercentage === 0) {
+    throw new Error(
+      `Could not determine tax rate for ${taxType} with price/night: ${pricePerNight}`
+    );
+  }
+
+  // Calculate amounts
+  const gstAmount = Math.round((subtotalAmount * gstPercentage) / 100);
+  const cgstPercentage = gstPercentage / 2;
+  const sgstPercentage = gstPercentage / 2;
+  const cgstAmount = (subtotalAmount * cgstPercentage) / 100;
+  const sgstAmount = (subtotalAmount * sgstPercentage) / 100;
+
+  return {
+    gstAmount: Math.round(gstAmount * 100) / 100,
+    gstPercentage,
+    cgstAmount: Math.round(cgstAmount * 100) / 100,
+    cgstPercentage,
+    sgstAmount: Math.round(sgstAmount * 100) / 100,
+    sgstPercentage,
+  };
+};
 
 export async function getServices() {
   const docRef = doc(db, "vikumar.azad@gmail.com", "hotel");
@@ -81,7 +170,7 @@ export async function createServiceUpdateOrder(upgradeData: any) {
 export async function createWellnessOrder(wellnessData: any) {
   const res = await fetch("/api/createOrder", {
     method: "POST",
-    body: JSON.stringify({ amount: Number(wellnessData.details?.price) * 100 }),
+    body: JSON.stringify({ amount: Number(wellnessData.totalPrice) * 100 }),
   });
   const data = await res.json();
 
@@ -122,7 +211,15 @@ export async function createWellnessOrder(wellnessData: any) {
           "vikumar.azad@gmail.com"
         );
         console.log("attendant", attendant);
-        setWellness(wellnessData, attendant);
+        setWellness(
+          {
+            orderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            ...wellnessData,
+          },
+          attendant
+        );
 
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
@@ -153,44 +250,64 @@ export async function setWellness(data: any, assignedAttendant: any) {
   )}`;
   const newService = {
     serviceId: newOrderId,
-    serviceName: data.details?.typeName,
-    startTime: data.details?.startTime,
-    endTime: data.details?.endTime,
-    price: parseFloat(data.details?.price),
+    serviceName: data.typeName,
+    startTime: data.startTime || "",
+    endTime: data.endTime || "",
+    price: parseFloat(data.price || "0"),
     attendant: assignedAttendant ? assignedAttendant.name : "Unassigned",
     attendantToken: assignedAttendant
       ? assignedAttendant.notificationToken
       : "",
     status: "requested",
     timeOfRequest: new Date().toISOString(),
-    time: data.time,
+    requestedTime: data.time || "",
     payment: {
-      discount: {
-        type: "none",
-        amount: 0,
-        code: "",
-      },
+      discount: [
+        {
+          type: "none",
+          discount: "",
+          code: "",
+        },
+      ],
       gst: {
-        gstAmount: data.details?.gstPercentage
-          ? calculateTax(data.details?.price, data.details?.gstPercentage)
-          : "",
-        gstPercentage: data.details?.gstPercentage || "",
-        cgstAmount: "",
-        cgstPercentage: "",
-        sgstAmount: "",
-        sgstPercentage: "",
+        ...data.gst,
       },
-      subtotal: data.details?.price,
-      mode: "",
-      paymentId: "",
-      paymentStatus: "pending",
-      price: data.details?.gstPercentage
-        ? data.details?.price +
-          calculateTax(data.details?.price, data.details?.gstPercentage)
-        : data.details?.price,
+      subtotal: data.price || 0,
+      mode: "online",
+      paymentId: data.razorpayPaymentId,
+      paymentStatus: "paid",
+      price: data.price,
+      totalPrice: data.totalPrice,
       priceAfterDiscount: "",
-      timeOfTransaction: "",
-      transctionId: "",
+      timeOfTransaction: new Date().toISOString(),
+      transctionId: data.orderId,
+    },
+  };
+
+  const newTransaction = {
+    location: data.location || "",
+    against: newOrderId || "",
+    attendant: assignedAttendant?.name || "",
+    attendantToken: assignedAttendant?.token || "",
+    attendantContact: assignedAttendant?.contact || "",
+    bookingId: "",
+    payment: {
+      paymentStatus: "paid",
+      mode: "online",
+      paymentId: data.razorpayPaymentId || "",
+      timeOfTransaction: new Date().toISOString(),
+      price: data.price || 0,
+      priceAfterDiscount: "",
+      gst: {
+        ...data.gst,
+      },
+      discount: [
+        {
+          type: "none",
+          discount: "",
+          code: "",
+        },
+      ],
     },
   };
 
@@ -212,18 +329,25 @@ export async function setWellness(data: any, assignedAttendant: any) {
 
   // const data = await setOfflineItem(updatedTableData);
   console.log("UPDATED", newService);
-  setOfflineRoom(sanitizedFormat, data.location);
-  updateOrdersForAttendant(assignedAttendant.name, newOrderId);
-  await sendWhatsAppTextMessage(
-    assignedAttendant.contact,
-    `Service ${newOrderId} assigned to you, Please reachout to reception to get the service delivered.`
+  const res = await setOfflineRoom(
+    sanitizedFormat,
+    newTransaction,
+    data.location
   );
+  if (res) {
+    updateOrdersForAttendant(assignedAttendant.name, newOrderId);
+    await sendWhatsAppTextMessage(
+      assignedAttendant.contact,
+      `Service ${newOrderId} assigned to you, Please reachout to reception to get the service delivered.`
+    );
+    redirect("/");
+  }
 }
 
 export async function createRecreationalOrder(recreational: any) {
   const res = await fetch("/api/createOrder", {
     method: "POST",
-    body: JSON.stringify({ amount: Number(recreational.details?.price) * 100 }),
+    body: JSON.stringify({ amount: Number(recreational.totalPrice) * 100 }),
   });
   const data = await res.json();
 
@@ -263,7 +387,15 @@ export async function createRecreationalOrder(recreational: any) {
         const attendant: any = await getOnlineStaffFromFirestore(
           "vikumar.azad@gmail.com"
         );
-        setWellness(recreational, attendant);
+        setWellness(
+          {
+            orderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            ...recreational,
+          },
+          attendant
+        );
 
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
@@ -284,7 +416,7 @@ export async function createRecreationalOrder(recreational: any) {
 export async function createTransportationOrder(transportation: any) {
   const res = await fetch("/api/createOrder", {
     method: "POST",
-    body: JSON.stringify({ amount: Number(transportation.price) * 100 }),
+    body: JSON.stringify({ amount: Number(transportation.totalPrice) * 100 }),
   });
   const data = await res.json();
 
@@ -324,7 +456,15 @@ export async function createTransportationOrder(transportation: any) {
         const attendant: any = await getOnlineStaffFromFirestore(
           "vikumar.azad@gmail.com"
         );
-        setWellness(transportation, attendant);
+        setWellness(
+          {
+            orderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            ...transportation,
+          },
+          attendant
+        );
 
         // sendOrder(orderData, token, "Justin");
         // sendNotification(
@@ -453,7 +593,11 @@ export function assignAttendantSequentially(
   return sortedStaff[0];
 }
 
-export async function setOfflineRoom(newService: any, location: any) {
+export async function setOfflineRoom(
+  newService: any,
+  newTransaction: any,
+  location: any
+) {
   try {
     const docRef = doc(db, "vikumar.azad@gmail.com", "hotel");
     const docSnap = await getDoc(docRef);
@@ -476,6 +620,7 @@ export async function setOfflineRoom(newService: any, location: any) {
           return {
             ...item,
             servicesUsed: updatedServices,
+            transctions: [...item.transctions, newTransaction],
           };
         }
         return item;

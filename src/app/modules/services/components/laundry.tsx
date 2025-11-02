@@ -21,9 +21,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, IndianRupee } from "lucide-react";
+import { RootState } from "@/lib/store";
+import { useSelector } from "react-redux";
+// import { assignAttendantSequentially } from "../utils/servicesApi";
 
 const Laundry = ({ data, flag }: any) => {
   console.log("DATA", data);
+  const user = useSelector((state: RootState) => state.addToOrderData.user);
+  console.log("user", user);
   const [selectedService, setSelectedService] = useState<string | null>(null);
 
   const form = useForm({
@@ -35,11 +40,50 @@ const Laundry = ({ data, flag }: any) => {
 
   const onSubmit = (el: any) => {
     const serviceDetails = selectedService ? data[selectedService][0] : null;
+    // const assignedAttendant: any =
+    //   assignAttendantSequentially(availableAttendant);
+    // const newOrderId = `SE:R-${
+    //   user.roomNo
+    // }:${generateRandomOrderNumber()}`;
     console.log("Booking submitted:", {
       selectedService,
       serviceDetails,
       userDescription: el.description,
     });
+
+    // const newService = {
+    //   serviceId: newOrderId,
+    //   serviceName: items[0].name,
+    //   startTime: items[0].startTime,
+    //   endTime: items[0].endTime,
+    //   price: parseFloat(items[0].price),
+    //   attendant: assignedAttendant ? assignedAttendant.name : "Unassigned",
+    //   attendantToken: assignedAttendant
+    //     ? assignedAttendant.notificationToken
+    //     : "",
+    //   status: "requested",
+    //   description: items[0].description,
+    //   timeOfRequest: new Date().toISOString(),
+    //   payment: {
+    //     discount: {
+    //       type: "none",
+    //       amount: 0,
+    //       code: "",
+    //     },
+    //     gst: {
+    //       ...gst,
+    //     },
+    //     subtotal: parseFloat(items[0].price),
+    //     mode: "",
+    //     paymentId: "",
+    //     paymentStatus: "pending",
+    //     price: parseFloat(items[0].price),
+    //     totalPrice: totalPrice,
+    //     priceAfterDiscount: "",
+    //     timeOfTransaction: "",
+    //     transctionId: "",
+    //   },
+    // };
   };
 
   return (

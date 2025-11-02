@@ -65,7 +65,7 @@ const RecentOrders = ({ hotel }: any) => {
         return <Clock className="w-4 h-4 mr-2" />;
     }
   };
-  const handlePayment = (hotel: any, service: any, id:string) => {
+  const handlePayment = (hotel: any, service: any, id: string) => {
     console.log("clicked");
     console.log("INFO", hotel, service, id);
 
@@ -74,7 +74,7 @@ const RecentOrders = ({ hotel }: any) => {
       location: hotel.bookingDetails?.location,
       customer: hotel.bookingDetails?.customer,
       orderData: service,
-      id:id
+      id: id,
     });
   };
 
@@ -95,8 +95,15 @@ const RecentOrders = ({ hotel }: any) => {
         />
       )}
       <div className="w-full max-w-xl mx-auto mt-6 mb-12 space-y-3">
-        {hotel?.diningDetails?.orders?.length > 0 && (
+        {hotel?.diningDetails?.orders?.length > 0 ||
+        hotel?.servicesUsed?.length > 0 ||
+        Object.keys(hotel?.issuesReported).length > 0 ? (
           <h2 className="text-xl font-bold mb-4">Orders</h2>
+        ) : (
+          <>
+            <h2 className="text-xl font-bold mb-4">No Orders</h2>
+            <p className="text-gray-600 text-sm">No orders found...</p>
+          </>
         )}
         {hotel?.diningDetails?.orders?.length > 0 &&
           hotel?.diningDetails?.orders.map((service: any) => {
@@ -289,31 +296,29 @@ const RecentOrders = ({ hotel }: any) => {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-gray-200">
-                        <div className="flex space-x-4">
+                      <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-gray-200 gap-2">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="w-[50%] rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
+                        >
+                          <Phone className="w-5 h-5 mr-2" />
+                          Call Kitchen
+                        </Button>
+                        {service.status !== "Delivered" && (
                           <Button
-                            variant="outline"
                             size="lg"
-                            className="rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
+                            className="w-[50%] rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
+                            disabled={service.payment.paymentStatus === "paid"}
+                            onClick={() =>
+                              handlePayment(hotel, service, service.orderId)
+                            }
                           >
-                            <Phone className="w-5 h-5 mr-2" />
-                            Call Kitchen
+                            {service.payment.paymentStatus === "pending"
+                              ? "Pay"
+                              : "Paid"}
                           </Button>
-                          {service.status !== "Delivered" && (
-                            <Button
-                              size="lg"
-                              className="rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
-                              disabled={
-                                service.payment.paymentStatus === "paid"
-                              }
-                              onClick={() => handlePayment(hotel, service, service.orderId)}
-                            >
-                              {service.payment.paymentStatus === "pending"
-                                ? "Pay Now"
-                                : "Paid"}
-                            </Button>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </CardContent>
                   </CollapsibleContent>
@@ -502,31 +507,29 @@ const RecentOrders = ({ hotel }: any) => {
                         </div>
                       </div>
 
-                      <div className=" mt-4 pt-4 border-t-2 border-gray-200">
-                        <div className="flex justify-between gap-2">
+                      <div className="flex justify-between gap-2 mt-4 pt-4 border-t-2 border-gray-200">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="w-[50%] rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
+                          onClick={() => handleCancellation(service)}
+                        >
+                          Cancel
+                        </Button>
+                        {service.status !== "Delivered" && (
                           <Button
-                            variant="outline"
                             size="lg"
-                            className="w-full rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
-                            onClick={() => handleCancellation(service)}
+                            className="w-[50%] rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
+                            disabled={service.payment.paymentStatus === "paid"}
+                            onClick={() =>
+                              handlePayment(hotel, service, service.serviceId)
+                            }
                           >
-                            Cancel
+                            {service.payment.paymentStatus === "pending"
+                              ? "Pay"
+                              : "Paid"}
                           </Button>
-                          {service.status !== "Delivered" && (
-                            <Button
-                              size="lg"
-                              className="w-full rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
-                              disabled={
-                                service.payment.paymentStatus === "paid"
-                              }
-                              onClick={() => handlePayment(hotel, service, service.serviceId)}
-                            >
-                              {service.payment.paymentStatus === "pending"
-                                ? "Pay Now"
-                                : "Paid"}
-                            </Button>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </CardContent>
                   </CollapsibleContent>
@@ -638,22 +641,20 @@ const RecentOrders = ({ hotel }: any) => {
                         </div>
                       </div>
 
-                      <div className=" mt-4 pt-4 border-t-2 border-gray-200">
-                        <div className="flex justify-between gap-2">
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-full rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            size="lg"
-                            className="w-full rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
-                          >
-                            Mark as Resolved
-                          </Button>
-                        </div>
+                      <div className="flex justify-between gap-2 mt-4 pt-4 border-t-2 border-gray-200">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="w-[50%] rounded-2xl border-2 hover:bg-gray-50 bg-transparent"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="lg"
+                          className="w-[50%] rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-xl"
+                        >
+                          Mark as Resolved
+                        </Button>
                       </div>
                     </CardContent>
                   </CollapsibleContent>

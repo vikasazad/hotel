@@ -250,7 +250,10 @@ export default function QuickServices({ user, requests }: any) {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto mt-6 mb-8">
+    <div
+      className="w-full max-w-xl mx-auto mt-6 mb-8"
+      data-onboarding="quick-services"
+    >
       <h2 className="text-xl font-bold mb-4">Quick Services</h2>
 
       <div className="grid grid-cols-2 gap-4">

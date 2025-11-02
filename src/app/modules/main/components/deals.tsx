@@ -29,7 +29,10 @@ export default function Deals() {
 
   return (
     <div className="pb-5 space-y-3">
-      <Card className="w-full  overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 border-none ">
+      <Card
+        className="w-full  overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 border-none "
+        data-onboarding="offers-card"
+      >
         <CardContent className="p-3 relative">
           {/* Animated background particles */}
           {isClient && (

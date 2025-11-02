@@ -18,10 +18,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ArrowLeft, IndianRupee } from "lucide-react";
-import { createWellnessOrder } from "../utils/servicesApi";
+import { calculateTax, createWellnessOrder } from "../utils/servicesApi";
 import Script from "next/script";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { toast } from "sonner";
 
 export default function Wellness({ data, flag }: any) {
   const BookingData: any = useSelector(
@@ -38,7 +39,6 @@ export default function Wellness({ data, flag }: any) {
         (service: any) => service.typeName === selectedService
       )
     : null;
-  const gstPercentage = "";
 
   console.log(
     "selectedService",
@@ -63,7 +63,7 @@ export default function Wellness({ data, flag }: any) {
 
     if (durationInMinutes <= 0) {
       // console.error("Invalid duration:", duration);
-      throw new Error("Duration must be greater than 0 minutes.");
+      toast.error("Duration must be greater than 0 minutes.");
     }
 
     // console.log("Duration in Minutes:", durationInMinutes);
@@ -100,13 +100,20 @@ export default function Wellness({ data, flag }: any) {
   const handleBooking = async () => {
     if (selectedCategory && selectedService && selectedTime) {
       setLoadScript(true);
+      const gst = calculateTax(
+        selectedServiceDetails.price,
+        selectedServiceDetails.price,
+        "services",
+        { services: BookingData.tax?.services }
+      );
       const _wellness = {
         category: selectedCategory,
         service: selectedService,
         time: selectedTime,
-        details: selectedServiceDetails,
         location: BookingData.bookingDetails.location,
-        gstPercentage,
+        gst: gst,
+        totalPrice: selectedServiceDetails.price + gst.gstAmount,
+        ...selectedServiceDetails,
       };
       console.log(_wellness);
       await createWellnessOrder(_wellness);

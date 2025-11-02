@@ -19,9 +19,10 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, IndianRupee } from "lucide-react";
 import Script from "next/script";
-import { createTransportationOrder } from "../utils/servicesApi";
+import { calculateTax, createTransportationOrder } from "../utils/servicesApi";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { toast } from "sonner";
 
 export default function Transportation({ data, flag }: any) {
   console.log("DATA", data);
@@ -30,14 +31,44 @@ export default function Transportation({ data, flag }: any) {
   );
   console.log("BookingData", BookingData);
   const [selectedService, setSelectedService] = useState<string | undefined>();
+  const [selectedAirport, setSelectedAirport] = useState<string | undefined>();
   const serviceTypes = Object.keys(data);
   const [loadScript, setLoadScript] = useState(false);
 
   const handleBookAndPay = async () => {
     if (selectedService) {
-      console.log("Selected tour:", data[selectedService][0]);
+      // Check if airport shuttle is selected and airport is required
+      const isAirportShuttle = selectedService
+        .toLowerCase()
+        .includes("airport shuttle");
+      const gst = calculateTax(
+        data[selectedService][0].price,
+        data[selectedService][0].price,
+        "services",
+        { services: BookingData.tax?.services }
+      );
+      console.log("GST", gst);
+      const hasAirportList = data[selectedService][0].airportList;
+
+      if (isAirportShuttle && hasAirportList && !selectedAirport) {
+        toast.error("Please select an airport for the shuttle service.");
+        return;
+      }
+
+      const bookingData = {
+        category: "Transportation",
+        service: selectedService,
+        time: "",
+        location: BookingData.bookingDetails.location,
+        gst: gst,
+        totalPrice: data[selectedService][0].price + gst.gstAmount,
+        ...data[selectedService][0],
+        selectedAirport: selectedAirport || null,
+      };
+
+      console.log("Selected service:", bookingData);
       setLoadScript(true);
-      await createTransportationOrder(data[selectedService][0]);
+      await createTransportationOrder(bookingData);
     } else {
       setLoadScript(false);
     }
@@ -55,7 +86,7 @@ export default function Transportation({ data, flag }: any) {
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </Button>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 mb-10">
         <h1 className="text-2xl font-bold mb-4">
           Book Transportation Services
         </h1>
@@ -67,7 +98,12 @@ export default function Transportation({ data, flag }: any) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select onValueChange={setSelectedService}>
+            <Select
+              onValueChange={(value) => {
+                setSelectedService(value);
+                setSelectedAirport(undefined); // Reset airport selection when service changes
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a service type" />
               </SelectTrigger>
@@ -80,6 +116,28 @@ export default function Transportation({ data, flag }: any) {
               </SelectContent>
             </Select>
 
+            {/* Airport Selection Dropdown - Only show for Airport Shuttle */}
+            {selectedService &&
+              selectedService.toLowerCase().includes("airport shuttle") &&
+              data[selectedService][0].airportList && (
+                <div className="mt-4">
+                  <Select onValueChange={setSelectedAirport}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select an airport" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {data[selectedService][0].airportList.map(
+                        (airport: string) => (
+                          <SelectItem key={airport} value={airport}>
+                            {airport}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
             {selectedService && (
               <div className="mt-4">
                 <h2 className="text-xl font-semibold mb-2">
@@ -88,7 +146,7 @@ export default function Transportation({ data, flag }: any) {
                 <p className="mb-2">{data[selectedService][0].description}</p>
                 <ul className="list-disc list-inside mb-2">
                   <li className="flex items-center ">
-                    Price: <IndianRupee className="w-4 h-4" />
+                    Minimum Price: <IndianRupee className="w-4 h-4" />
                     {data[selectedService][0].price}
                   </li>
                   <li>Duration: {data[selectedService][0].duration}</li>
@@ -102,8 +160,16 @@ export default function Transportation({ data, flag }: any) {
                   )}
                   {data[selectedService][0].airportList && (
                     <li>
-                      Airports:{" "}
-                      {data[selectedService][0].airportList.join(", ")}
+                      {selectedAirport ? (
+                        <>
+                          Selected Airport: <strong>{selectedAirport}</strong>
+                        </>
+                      ) : (
+                        <>
+                          Available Airports:{" "}
+                          {data[selectedService][0].airportList.join(", ")}
+                        </>
+                      )}
                     </li>
                   )}
                 </ul>
@@ -113,7 +179,12 @@ export default function Transportation({ data, flag }: any) {
           <CardFooter>
             <Button
               onClick={handleBookAndPay}
-              disabled={!selectedService}
+              disabled={
+                !selectedService ||
+                (selectedService.toLowerCase().includes("airport shuttle") &&
+                  data[selectedService]?.[0]?.airportList &&
+                  !selectedAirport)
+              }
               className="w-full"
             >
               Book and Pay
