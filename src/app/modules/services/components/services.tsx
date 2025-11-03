@@ -162,8 +162,8 @@ export default function Services({ data }: any) {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          <div className="w-full max-w-4xl mx-auto px-6 py-4 space-y-6 mb-12">
-            <div className="space-y-2">
+          <div className="w-full max-w-4xl mx-auto px-6 pt-2 pb-6 space-y-6 mb-12">
+            <div>
               <h2 className="text-3xl font-bold tracking-tight">Services</h2>
               <p className="text-muted-foreground text-lg">
                 What kind of services do you want?
@@ -185,22 +185,22 @@ export default function Services({ data }: any) {
                     <Card
                       key={serviceKey}
                       onClick={() => categoryClick(serviceKey)}
-                      className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
+                      className="group  transition-all duration-200 cursor-pointer [box-shadow:var(--shadow-s)] py-1"
                     >
                       <CardContent className="p-3">
-                        <div className="space-y-4">
-                          <div
-                            className={`w-12 h-12 rounded-lg flex items-center justify-center ${color} transition-transform group-hover:scale-110`}
-                          >
-                            <Icon className="w-6 h-6" />
-                          </div>
-                          <div className="space-y-2">
+                        <div className="flex items-center justify-between ">
+                          <div>
                             <h3 className="font-semibold text-xl">
                               {serviceKey}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {description}
                             </p>
+                          </div>
+                          <div
+                            className={` w-12 h-12 rounded-lg flex items-center justify-center ${color} transition-transform group-hover:scale-110 [box-shadow:var(--shadow-m)]`}
+                          >
+                            <Icon className="w-6 h-6" />
                           </div>
                         </div>
                       </CardContent>

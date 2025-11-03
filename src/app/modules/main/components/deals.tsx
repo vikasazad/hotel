@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Gift, Percent, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { sendWhatsAppFlow } from "../utils/mainAPI";
+// import { sendWhatsAppFlow } from "../utils/mainAPI";
 
 export default function Deals() {
   const router = useRouter();
@@ -24,13 +24,13 @@ export default function Deals() {
 
   const handleClick = async () => {
     router.push("/coupon");
-    await sendWhatsAppFlow("+918851280284", "Vikas", "301");
+    // await sendWhatsAppFlow("+918851280284", "Vikas", "301");
   };
 
   return (
     <div className="pb-5 space-y-3">
       <Card
-        className="w-full  overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 border-none "
+        className="w-full  overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 border-none [box-shadow:var(--shadow-s)]"
         data-onboarding="offers-card"
       >
         <CardContent className="p-3 relative">

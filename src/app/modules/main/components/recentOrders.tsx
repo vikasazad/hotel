@@ -9,16 +9,15 @@ import {
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
 import {
-  AlertCircle,
+  // AlertCircle,
   BadgeAlert,
-  CheckCircle,
+  // CheckCircle,
   ChevronDown,
-  Clock,
   HandPlatter,
   IndianRupee,
   Package,
   Phone,
-  Timer,
+  // Timer,
   TreePalm,
   Utensils,
 } from "lucide-react";
@@ -53,18 +52,18 @@ const RecentOrders = ({ hotel }: any) => {
     );
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Preparing":
-        return <Timer className="w-4 h-4 mr-2" />;
-      case "Ready for Delivery":
-        return <AlertCircle className="w-4 h-4 mr-2" />;
-      case "Delivered":
-        return <CheckCircle className="w-4 h-4 mr-2" />;
-      default:
-        return <Clock className="w-4 h-4 mr-2" />;
-    }
-  };
+  // const getStatusIcon = (status: string) => {
+  //   switch (status) {
+  //     case "Preparing":
+  //       return <Timer className="w-4 h-4 mr-2" />;
+  //     case "Ready for Delivery":
+  //       return <AlertCircle className="w-4 h-4 mr-2" />;
+  //     case "Delivered":
+  //       return <CheckCircle className="w-4 h-4 mr-2" />;
+  //     default:
+  //       return <Clock className="w-4 h-4 mr-2" />;
+  //   }
+  // };
   const handlePayment = (hotel: any, service: any, id: string) => {
     console.log("clicked");
     console.log("INFO", hotel, service, id);
@@ -94,15 +93,21 @@ const RecentOrders = ({ hotel }: any) => {
           src="https://checkout.razorpay.com/v1/checkout.js"
         />
       )}
-      <div className="w-full max-w-xl mx-auto mt-6 mb-12 space-y-3">
+      <div className="w-full max-w-xl mx-auto  mb-12 space-y-3">
         {hotel?.diningDetails?.orders?.length > 0 ||
         hotel?.servicesUsed?.length > 0 ||
         Object.keys(hotel?.issuesReported).length > 0 ? (
-          <h2 className="text-xl font-bold mb-4">Orders</h2>
+          <>
+            {hotel?.diningDetails?.orders?.length > 0 && (
+              <h2 className="text-xl font-bold mb-4">Orders</h2>
+            )}
+          </>
         ) : (
           <>
-            <h2 className="text-xl font-bold mb-4">No Orders</h2>
-            <p className="text-gray-600 text-sm">No orders found...</p>
+            <h2 className="text-xl font-bold mb-2 mx-2">Orders</h2>
+            <p className="text-center text-gray-600 text-sm mx-auto">
+              No orders found...
+            </p>
           </>
         )}
         {hotel?.diningDetails?.orders?.length > 0 &&
@@ -138,10 +143,7 @@ const RecentOrders = ({ hotel }: any) => {
                               </h3>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <StatusChip
-                                status={service.status}
-                                icon={getStatusIcon(service.status)}
-                              />
+                              <StatusChip status={service.status} />
 
                               <div className="flex items-center space-x-2 text-gray-600">
                                 <span className="font-medium text-sm">
@@ -363,10 +365,7 @@ const RecentOrders = ({ hotel }: any) => {
                               </h3>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <StatusChip
-                                status={service.status}
-                                icon={getStatusIcon(service.status)}
-                              />
+                              <StatusChip status={service.status} />
 
                               <div className="flex items-center space-x-2 text-gray-600">
                                 <span className="font-medium text-sm">
@@ -573,10 +572,7 @@ const RecentOrders = ({ hotel }: any) => {
                               </h3>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <StatusChip
-                                status={service.status}
-                                icon={getStatusIcon(service.status)}
-                              />
+                              <StatusChip status={service.status} />
 
                               <div className="flex items-center space-x-2 text-gray-600">
                                 <span className="font-medium text-sm">

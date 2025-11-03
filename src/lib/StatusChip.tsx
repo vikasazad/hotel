@@ -3,10 +3,10 @@ import { Badge } from "@/components/ui/badge";
 
 const StatusChip = ({
   status,
-  icon,
+  icon = null,
 }: {
   status: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode | null;
 }) => {
   // Capitalize the first letter of the status
   const capitalize = (str: string) =>
@@ -131,7 +131,7 @@ const StatusChip = ({
         }}
         className="flex items-center space-x-2 px-2 py-1 rounded-full text-xs border-2"
       >
-        {icon}
+        {icon && icon}
         {stat}
       </Badge>
     </div>

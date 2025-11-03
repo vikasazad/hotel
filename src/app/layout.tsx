@@ -49,7 +49,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={dmSans.className}>
         <body>
-          <main>
+          <main className="[background:var(--bg-light)]">
             <Provider store={storeRef.current}>
               {children}
               {showFooter && <Footer />}

@@ -73,9 +73,9 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg">
+          <div className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-lg">
             <div>
-              <div className="text-sm text-gray-500">CHECK IN</div>
+              <div className="text-sm text-gray-500 font-bold">CHECK IN</div>
               <div className="font-medium">
                 {new Date(hotel?.bookingDetails?.checkIn).toLocaleDateString(
                   "en-GB",
@@ -85,7 +85,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
             </div>
             <div className="text-green-700">to</div>
             <div>
-              <div className="text-sm text-gray-500">CHECK OUT</div>
+              <div className="text-sm text-gray-500 font-bold">CHECK OUT</div>
               <div className="font-medium">
                 {new Date(hotel?.bookingDetails?.checkOut).toLocaleDateString(
                   "en-GB",
@@ -95,7 +95,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
             </div>
             <Button
               variant="ghost"
-              className="rounded-lg p-2 h-10 w-10 bg-green-100"
+              className="rounded-lg p-2 h-10 w-10 bg-green-100 [box-shadow:var(--shadow-s)]"
               data-onboarding="room-info-button"
               onClick={() => {
                 dispatch(addData(hotel));
@@ -106,7 +106,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
             </Button>
           </div>
           <div
-            className="w-full flex items-center justify-center  gap-2  py-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold text-base rounded-lg shadow-md  hover:opacity-90 active:scale-95 transition-all"
+            className="w-full flex items-center justify-center  gap-2  py-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white font-semibold text-base rounded-lg [box-shadow:var(--shadow-l)]  hover:opacity-90 active:scale-95 transition-all"
             data-onboarding="checkout-button"
             onClick={() => {
               setOpen(true);

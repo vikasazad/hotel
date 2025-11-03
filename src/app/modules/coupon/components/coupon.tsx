@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Copy, IndianRupee, Sparkles, Tag } from "lucide-react";
+import { ArrowLeft, Copy, IndianRupee, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,7 @@ export default function Coupon() {
           <Card className="border-2">
             <CardHeader className="space-y-2 p-4">
               <div className="flex items-center gap-2">
-                <Tag className="h-5 w-5 text-primary" />
+                {/* <Tag className="h-5 w-5 text-primary" /> */}
                 <CardTitle className="text-xl">Apply Coupon</CardTitle>
               </div>
               <div className="flex gap-2">
@@ -88,11 +88,11 @@ export default function Coupon() {
                           }}
                         >
                           {data.type === "percentage" ? (
-                            data.amount
+                            data.discount + "%"
                           ) : (
                             <div className="flex items-center ">
-                              <IndianRupee className="w-4 h-4" />
-                              {data.amount}
+                              <IndianRupee className="w-4 h-4 rotate-90" />
+                              {data.discount}
                             </div>
                           )}
                         </div>
@@ -124,8 +124,8 @@ export default function Coupon() {
                         <div className="space-y-1">
                           <p className="text-sm font-medium text-green-600">
                             {data.type === "percentage"
-                              ? `Save ${data.amount} on the Order`
-                              : `Save ₹${data.amount} on the Order`}
+                              ? `Save ${data.discount} on the Order`
+                              : `Save ₹${data.discount} on the Order`}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             Use code TRYNEW & get 30% off on orders above ₹159.

@@ -1,10 +1,10 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Home, UtensilsCrossed, Settings, AlertCircle } from "lucide-react";
+import { Home, AlertCircle, ConciergeBell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import Image from "next/image";
 
 const Footer = () => {
   const url = usePathname();
@@ -14,54 +14,50 @@ const Footer = () => {
   );
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-white rounded-t-xl">
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-white rounded-t-xl ">
       <div className="max-w-md mx-auto">
-        <div className="flex items-center justify-between px-4 py-2">
-          <Button
-            variant="ghost"
-            className="flex flex-col items-center gap-1"
+        <div className="flex items-center justify-between px-4 py-1">
+          <div
+            className={`py-1.5 px-4 rounded-lg flex flex-col items-center  ${url === "/" ? "bg-green-100 [box-shadow:var(--shadow-s)]" : "bg-transparent"} `}
             onClick={() => router.push("/")}
           >
-            <Home
-              className={`w-5 h-5 ${url === "/" ? "text-blue-600" : "text-gray-600"}`}
-            />
-            <span className="text-xs font-medium">Dashboard</span>
-          </Button>
+            <Home className="w-4 h-4 text-black " strokeWidth={2} />
+            <span className="text-[10px] font-medium">Dashboard</span>
+          </div>
 
           <Link href={diningLink} target="_blank" passHref>
-            <Button
-              variant="ghost"
-              className="flex flex-col items-center gap-1"
+            <div
+              className={`py-1.5 px-4 rounded-lg flex flex-col items-center  ${url === "/dining" ? "bg-green-100 [box-shadow:var(--shadow-s)]" : "bg-transparent"}`}
               data-onboarding="dining-button"
             >
-              <UtensilsCrossed className="w-5 h-5 text-gray-600" />
-              <span className="text-xs font-medium">Dining</span>
-            </Button>
+              <Image
+                src="/hamburger.svg"
+                alt="hamburger"
+                width={16}
+                height={16}
+              />
+              {/* <Hamburger className="w-6 h-6 text-black" strokeWidth={2} /> */}
+              <span className="text-[10px] font-medium">Food</span>
+            </div>
           </Link>
 
-          <Button
-            variant="ghost"
-            className="flex flex-col items-center gap-1"
+          <div
+            className={`py-1.5 px-4 rounded-lg flex flex-col items-center  ${url === "/services" ? "bg-green-100 [box-shadow:var(--shadow-s)]" : "bg-transparent"}`}
             data-onboarding="services-button"
             onClick={() => router.push("/services")}
           >
-            <Settings
-              className={`w-5 h-5 ${url === "/services" ? "text-blue-600" : "text-gray-600"}`}
-            />
-            <span className="text-xs font-medium">Services</span>
-          </Button>
+            <ConciergeBell className={`w-4 h-4 text-black`} />
+            <span className="text-[10px] font-medium">Services</span>
+          </div>
 
-          <Button
-            variant="ghost"
-            className="flex flex-col items-center gap-1"
+          <div
+            className={`py-1.5 px-4 rounded-lg flex flex-col items-center  ${url === "/issues" ? "bg-green-100 [box-shadow:var(--shadow-s)]" : "bg-transparent"}`}
             data-onboarding="issues-button"
             onClick={() => router.push("/issues")}
           >
-            <AlertCircle
-              className={`w-5 h-5 ${url === "/issues" ? "text-blue-600" : "text-gray-600"}`}
-            />
-            <span className="text-xs font-medium">Issues</span>
-          </Button>
+            <AlertCircle className={`w-4 h-4 text-black`} />
+            <span className="text-[10px] font-medium">Issues</span>
+          </div>
         </div>
       </div>
     </div>

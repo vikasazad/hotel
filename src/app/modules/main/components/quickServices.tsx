@@ -23,6 +23,7 @@ import {
 import { handleServiceRequest } from "../utils/mainAPI";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Icons } from "@/components/ui/icons";
 
 const services = [
   {
@@ -39,7 +40,7 @@ const services = [
   },
   {
     icon: Wrench,
-    name: "Technical Assistance",
+    name: "Assistance",
     border: "border-orange-200",
     bg: "bg-orange-50",
   },
@@ -52,7 +53,7 @@ const services = [
 ];
 
 export default function QuickServices({ user, requests }: any) {
-  console.log("requests", requests);
+  // console.log("requests", requests);
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const [waterSize, setWaterSize] = useState("");
@@ -60,13 +61,14 @@ export default function QuickServices({ user, requests }: any) {
   const [assistance, setAssistance] = useState("");
   const [housekeepingType, setHousekeepingType] = useState("urgent");
   const [housekeepingTime, setHousekeepingTime] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleOpen = (service: any) => {
     setSelectedService(service);
     setOpen(true);
   };
 
   const handleSubmit = async (service: string, info: string, time?: string) => {
+    setIsLoading(true);
     const res = await handleServiceRequest(user, service, info, time);
     console.log(res);
     if (!res) {
@@ -74,6 +76,8 @@ export default function QuickServices({ user, requests }: any) {
         description: "Please contact the reception for assistance",
       });
     }
+    setOpen(false);
+    setIsLoading(false);
   };
 
   const renderDrawerContent = () => {
@@ -101,8 +105,10 @@ export default function QuickServices({ user, requests }: any) {
               <Button
                 className="w-full"
                 onClick={() => waterSize && handleSubmit("Water", waterSize)}
+                disabled={isLoading}
               >
                 Submit Request
+                {isLoading && <Icons.spinner className="w-4 h-4" />}
               </Button>
             </DrawerFooter>
           </>
@@ -134,17 +140,19 @@ export default function QuickServices({ user, requests }: any) {
               <Button
                 className="w-full"
                 onClick={() => toiletry && handleSubmit("Toiletries", toiletry)}
+                disabled={isLoading}
               >
                 Submit Request
+                {isLoading && <Icons.spinner className="w-4 h-4" />}
               </Button>
             </DrawerFooter>
           </>
         );
-      case "Technical Assistance":
+      case "Assistance":
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Technical Assistance</DrawerTitle>
+              <DrawerTitle>Assistance</DrawerTitle>
             </DrawerHeader>
             <DrawerDescription> </DrawerDescription>
 
@@ -169,10 +177,12 @@ export default function QuickServices({ user, requests }: any) {
               <Button
                 className="w-full"
                 onClick={() =>
-                  assistance && handleSubmit("Technical Assistance", assistance)
+                  assistance && handleSubmit("Assistance", assistance)
                 }
+                disabled={isLoading}
               >
                 Submit Request
+                {isLoading && <Icons.spinner className="w-4 h-4" />}
               </Button>
             </DrawerFooter>
           </>
@@ -238,8 +248,10 @@ export default function QuickServices({ user, requests }: any) {
                     housekeepingTime
                   )
                 }
+                disabled={isLoading}
               >
                 Submit Request
+                {isLoading && <Icons.spinner className="w-4 h-4" />}
               </Button>
             </DrawerFooter>
           </>
@@ -265,10 +277,10 @@ export default function QuickServices({ user, requests }: any) {
           >
             <DrawerTrigger asChild>
               <button
-                className={`flex flex-col items-center justify-center h-20 rounded-xl border-2 ${service.border} ${service.bg} transition-shadow hover:shadow-md w-full`}
+                className={`flex flex-col items-center justify-center h-20 rounded-xl  ${service.bg} transition-shadow hover:shadow-md w-full [box-shadow:var(--shadow-s)]`}
                 onClick={() => handleOpen(service)}
               >
-                <service.icon className="h-6 w-6 mb-2" />
+                <service.icon className="h-6 w-6 " />
                 <span className="font-medium text-base">{service.name}</span>
               </button>
             </DrawerTrigger>
