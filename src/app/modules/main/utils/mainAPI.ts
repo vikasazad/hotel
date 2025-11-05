@@ -259,7 +259,8 @@ export async function generateToken(
   email: string,
   roomNo: string,
   phone: string,
-  name: string
+  name: string,
+  url: string
 ) {
   const encodedSecretKey = new TextEncoder().encode("Vikas@1234");
 
@@ -270,6 +271,7 @@ export async function generateToken(
     name,
     tag: "hotel",
     tax: { gstPercentage: "" },
+    home:url
   };
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })

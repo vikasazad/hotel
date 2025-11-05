@@ -30,7 +30,8 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
       email,
       hotel?.bookingDetails?.location,
       hotel?.bookingDetails?.customer?.phone,
-      hotel?.bookingDetails?.customer?.name
+      hotel?.bookingDetails?.customer?.name,
+      window.location.href
     ).then((data: string) => {
       if (data) {
         console.log(
