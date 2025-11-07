@@ -101,9 +101,9 @@ export default function QuickServices({ user, requests }: any) {
                 </SelectContent>
               </Select>
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="px-0">
               <Button
-                className="w-full"
+                className="w-full bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80"
                 onClick={() => waterSize && handleSubmit("Water", waterSize)}
                 disabled={isLoading}
               >
@@ -136,9 +136,9 @@ export default function QuickServices({ user, requests }: any) {
                 </SelectContent>
               </Select>
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="px-0">
               <Button
-                className="w-full"
+                className="w-full bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80"
                 onClick={() => toiletry && handleSubmit("Toiletries", toiletry)}
                 disabled={isLoading}
               >
@@ -173,9 +173,9 @@ export default function QuickServices({ user, requests }: any) {
                 </SelectContent>
               </Select>
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="px-0">
               <Button
-                className="w-full"
+                className="w-full bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80"
                 onClick={() =>
                   assistance && handleSubmit("Assistance", assistance)
                 }
@@ -237,9 +237,9 @@ export default function QuickServices({ user, requests }: any) {
                 </Select>
               )}
             </div>
-            <DrawerFooter>
+            <DrawerFooter className="px-0">
               <Button
-                className="w-full"
+                className="w-full bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80"
                 onClick={() =>
                   housekeepingType &&
                   handleSubmit(
@@ -284,7 +284,7 @@ export default function QuickServices({ user, requests }: any) {
                 <span className="font-medium text-base">{service.name}</span>
               </button>
             </DrawerTrigger>
-            <DrawerContent className="max-w-lg mx-auto px-4">
+            <DrawerContent className="max-w-lg mx-auto px-4 rounded-t-xl">
               {renderDrawerContent()}
             </DrawerContent>
           </Drawer>

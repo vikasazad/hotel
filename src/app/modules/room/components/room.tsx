@@ -9,14 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Users,
-  CreditCard,
-  ArrowLeft,
-  Phone,
-  ArrowRight,
-  IndianRupee,
-} from "lucide-react";
+import { Users, ArrowLeft, Phone, ArrowRight, IndianRupee } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -37,9 +30,9 @@ export default function RoomDetail() {
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </Button>
-      <Card className="overflow-hidden ">
+      <Card className="overflow-hidden [box-shadow:var(--shadow-s)]">
         <div className="relative">
-          <Carousel className="w-full">
+          <Carousel className="w-full [box-shadow:var(--shadow-m)]">
             <CarouselContent>
               {BookingData?.bookingDetails?.images?.map(
                 (src: any, index: number) => (
@@ -59,7 +52,7 @@ export default function RoomDetail() {
             <CarouselPrevious className="left-4" />
             <CarouselNext className="right-4" />
           </Carousel>
-          <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white/80">
+          <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white/80 [box-shadow:var(--shadow-s)]">
             Your Room
           </Badge>
         </div>
@@ -73,7 +66,7 @@ export default function RoomDetail() {
                 {BookingData?.bookingDetails?.description}
               </p>
             </div>
-            <div className="bg-green-100 p-3 rounded-lg text-center px-4">
+            <div className="bg-green-100 p-2 rounded-lg text-center px-4 [box-shadow:var(--shadow-s)]">
               <div className="text-2xl font-bold text-green-700">
                 {BookingData?.bookingDetails?.nights}
               </div>
@@ -81,22 +74,30 @@ export default function RoomDetail() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg">
+          <div className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg [box-shadow:var(--shadow-s)]">
             <div>
               <div className="text-sm text-gray-500">CHECK IN</div>
-              <div className="font-medium">
+              <div className=" font-bold">
                 {new Date(
                   BookingData?.bookingDetails?.checkIn
-                ).toLocaleDateString("en-GB")}
+                ).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </div>
             </div>
             <div className="text-green-700">to</div>
             <div>
               <div className="text-sm text-gray-500">CHECK OUT</div>
-              <div className="font-medium">
+              <div className=" font-bold">
                 {new Date(
                   BookingData?.bookingDetails?.checkOut
-                ).toLocaleDateString("en-GB")}
+                ).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </div>
             </div>
           </div>
@@ -143,40 +144,38 @@ export default function RoomDetail() {
       </Card>
 
       {/* Payment Details Card */}
-      <Card>
+      <Card className="[box-shadow:var(--shadow-s)]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
             Payment details
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-2">
-              <div className="text-sm font-medium">Price breakup</div>
               <div className="grid gap-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between font-bold">
                   <span className="text-sm text-muted-foreground">
                     {`Room (${BookingData?.bookingDetails?.nights} night × ${BookingData?.bookingDetails?.noOfGuests} guests)`}
                   </span>
-                  <span className="font-medium flex items-center ">
+                  <span className=" flex items-center ">
                     <IndianRupee className="w-4 h-4" />
                     {BookingData?.bookingDetails?.payment?.subtotal}
                   </span>
                 </div>
                 {BookingData?.bookingDetails?.payment?.gst?.gstPercentage && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between font-bold">
                     <span className="text-sm text-muted-foreground">
                       {`Tax (${BookingData?.bookingDetails?.payment?.gst?.gstPercentage}%)`}
                     </span>
-                    <span className="font-medium flex items-center ">
+                    <span className=" flex items-center ">
                       <IndianRupee className="w-4 h-4" />
                       {BookingData?.bookingDetails?.payment?.gst?.gstAmount}
                     </span>
                   </div>
                 )}
                 {BookingData?.bookingDetails?.payment?.discount?.type && (
-                  <div className="flex items-center justify-between text-green-600">
+                  <div className="flex items-center justify-between text-green-600 font-bold">
                     <span className="text-sm">
                       Coupon{" "}
                       <span className="text-black">
@@ -184,7 +183,7 @@ export default function RoomDetail() {
                         )
                       </span>
                     </span>
-                    <span className="font-medium flex items-center ">
+                    <span className=" flex items-center ">
                       -<IndianRupee className="w-4 h-4" />
                       {BookingData?.bookingDetails?.payment?.discount?.amount}
                     </span>
@@ -214,7 +213,7 @@ export default function RoomDetail() {
                   </Badge>
                 )}
               </div>
-              <span className="text-green-600 text-lg font-semibold flex items-center ">
+              <span className="text-green-600 text-lg font-bold flex items-center ">
                 <IndianRupee className="w-4 h-4" />
                 {BookingData?.bookingDetails?.payment?.totalPrice}
               </span>
@@ -222,7 +221,7 @@ export default function RoomDetail() {
           </div>
         </CardContent>
       </Card>
-      <Card className="bg-white rounded-lg shadow-md p-6">
+      <Card className="bg-white rounded-lg  p-6 [box-shadow:var(--shadow-s)]">
         <CardTitle className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-gray-800">Need help?</span>
           <svg

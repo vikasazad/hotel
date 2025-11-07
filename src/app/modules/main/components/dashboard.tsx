@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader } from "@/components/ui/card";
 
-import { ArrowRight, DoorOpen } from "lucide-react";
+import { ArrowRight, DoorOpen, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { generateToken, handleUserCheckOut } from "../utils/mainAPI";
@@ -18,6 +18,54 @@ import {
 } from "@/components/ui/drawer";
 
 import Link from "next/link";
+
+const StarRating = ({ rating }: { rating: number }) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const decimal = rating % 1;
+  const hasPartialStar = decimal > 0;
+
+  // Add full stars
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <Star
+        key={`full-${i}`}
+        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+      />
+    );
+  }
+
+  // Add partial star if needed (e.g., 0.3, 0.7, 0.8, etc.)
+  if (hasPartialStar) {
+    const partialWidth = `${decimal * 100}%`;
+    stars.push(
+      <div key="partial" className="relative w-4 h-4">
+        <Star className="absolute w-4 h-4 text-gray-300" />
+        <div
+          className="absolute overflow-hidden h-4"
+          style={{ width: partialWidth }}
+        >
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        </div>
+      </div>
+    );
+  }
+
+  // Add empty stars
+  const emptyStars = 5 - Math.ceil(rating);
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      {stars}
+      <span className="ml-1 text-sm text-yellow-400 font-semibold">
+        {rating}
+      </span>
+    </div>
+  );
+};
 
 const Dashboard = ({ user, hotel, info, email, tax }: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -61,7 +109,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">{info?.name}</h2>
-              <div className="text-yellow-400">{info?.rating}</div>
+              {info?.rating && <StarRating rating={info.rating} />}
               <p className="text-gray-500 text-sm">{info?.description}</p>
             </div>
             <div className="bg-green-100 px-3 py-2 rounded-lg text-center ">
