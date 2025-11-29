@@ -295,7 +295,7 @@ export async function handleServiceRequest(
   //save the request in the database under bookingDetails
   console.log("user", user, service, info, time);
   const phoneNumber = await findStaff(user, "concierge");
-  const requestId = generateOrderId("BOK", user.roomNo);
+  const requestId = generateOrderId("REQ", user.roomNo);
 
   if (phoneNumber) {
     const message = await sendMessageToAttendant(
