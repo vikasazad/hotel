@@ -279,6 +279,12 @@ export async function generateToken(
   return token;
 }
 
+function generateOrderId(restaurantCode: string, roomNo: string) {
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  const orderId = `${restaurantCode}:R-${roomNo}:${randomNumber}`;
+  return orderId;
+}
+
 export async function handleServiceRequest(
   user: any,
   service: string,
@@ -289,21 +295,12 @@ export async function handleServiceRequest(
   //save the request in the database under bookingDetails
   console.log("user", user, service, info, time);
   const phoneNumber = await findStaff(user, "concierge");
-  const randomStr = (n: number) =>
-    [...Array(n)]
-      .map(
-        () =>
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[
-            Math.floor(Math.random() * 62)
-          ]
-      )
-      .join("");
-  const id = randomStr(6);
-  // console.log("phoneNumber", phoneNumber);
+  const requestId = generateOrderId("BOK", user.roomNo);
+
   if (phoneNumber) {
     const message = await sendMessageToAttendant(
       user,
-      id,
+      requestId,
       phoneNumber.contact,
       phoneNumber.name,
       service,
@@ -332,8 +329,8 @@ export async function handleServiceRequest(
         updatedData[roomIndex].bookingDetails.requests = {};
       }
 
-      updatedData[roomIndex].bookingDetails.requests[id] = {
-        id,
+      updatedData[roomIndex].bookingDetails.requests[requestId] = {
+        id: requestId,
         user,
         service,
         info,
@@ -412,7 +409,7 @@ export function assignAttendantSequentially(
 
 export async function sendMessageToAttendant(
   user: any,
-  id: string,
+  requestId: string,
   phoneNumber: string,
   name: string,
   service: string,
@@ -452,7 +449,7 @@ export async function sendMessageToAttendant(
                 {
                   type: "reply",
                   reply: {
-                    id: `request_resolved_${id}`,
+                    id: `request_resolved_${requestId}`,
                     title: "Ok Request Resolved",
                   },
                 },
@@ -470,7 +467,7 @@ export async function sendMessageToAttendant(
       // Store pending assignment with status
       await storePendingAssignment({
         staffName: name,
-        orderId: id,
+        orderId: requestId,
         staffContact: phoneNumber,
         messageId,
         info: `${service} ${info}`,
