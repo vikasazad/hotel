@@ -2,7 +2,10 @@ import { db } from "@/config/db/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { SignJWT } from "jose";
 import { DateTime } from "luxon";
-import { sendWhatsAppTextMessage } from "../../services/utils/servicesApi";
+import {
+  sendWhatsAppTextMessage,
+  updateOrdersForAttendant,
+} from "../../services/utils/servicesApi";
 
 export async function createOrder({ location, customer, orderData, id }: any) {
   const res = await fetch("/api/createOrder", {
@@ -338,6 +341,8 @@ export async function handleServiceRequest(
         time: new Date().toISOString(),
         status: "requested",
       };
+
+      await updateOrdersForAttendant(phoneNumber.name, requestId);
 
       await updateDoc(docRef, {
         "live.rooms": updatedData,
