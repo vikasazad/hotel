@@ -305,6 +305,7 @@ export async function handleServiceRequest(
       user,
       id,
       phoneNumber.contact,
+      phoneNumber.name,
       service,
       info,
       time,
@@ -413,6 +414,7 @@ export async function sendMessageToAttendant(
   user: any,
   id: string,
   phoneNumber: string,
+  name: string,
   service: string,
   info: string,
   time?: string,
@@ -467,10 +469,11 @@ export async function sendMessageToAttendant(
 
       // Store pending assignment with status
       await storePendingAssignment({
-        staffName: "",
+        staffName: name,
         orderId: id,
         staffContact: phoneNumber,
         messageId,
+        info: `${service} ${info}`,
         timestamp: Date.now(),
         attemptCount: 1,
         customerName: "",
