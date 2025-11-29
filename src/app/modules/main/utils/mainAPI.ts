@@ -271,7 +271,7 @@ export async function generateToken(
     name,
     tag: "hotel",
     tax: { gstPercentage: "" },
-    home:url
+    home: url,
   };
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -497,30 +497,22 @@ export async function sendMessageToAttendant(
 
 async function storePendingAssignment(assignment: any) {
   try {
-    // Store assignment as a field within the webhook document
-    console.log("assignment", assignment);
     const businessEmail = assignment.businessEmail || "vikumar.azad@gmail.com";
-    const docRef = doc(db, businessEmail, "webhook");
+    const assignmentRef = doc(
+      db,
+      businessEmail,
+      "webhook",
+      "assignments",
+      assignment.orderId
+    );
 
-    // Get existing webhook document
-    const docSnap = await getDoc(docRef);
-    let existingAssignments = {};
-
-    if (docSnap.exists()) {
-      existingAssignments = docSnap.data() || {};
-    }
-
-    // Add the new assignment
-    const updatedAssignments = {
-      ...existingAssignments,
-      [assignment.orderId]: {
-        ...assignment,
-        status: assignment.status || "pending",
-        timestamp: Date.now(),
-      },
+    const assignmentData = {
+      ...assignment,
+      status: assignment.status || "pending",
+      timestamp: Date.now(),
     };
 
-    await setDoc(docRef, updatedAssignments);
+    await setDoc(assignmentRef, assignmentData);
     console.log("Pending assignment stored:", assignment.orderId);
   } catch (error) {
     console.error("Error storing pending assignment:", error);
