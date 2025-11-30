@@ -214,7 +214,8 @@ const IssuesDialog = ({
   const isFormValid = () => {
     const hasOrderId = !!formData.orderId;
     const hasIssueType = !!formData.specificIssue;
-    const hasDescription = !!formData.description.trim();
+    const hasDescription =
+      !!formData.description.trim() && formData.description.trim().length > 5;
 
     // For hotel orders, also require sub-issue selection
     const isHotelOrder = formData.orderId.startsWith("BOK");
@@ -229,7 +230,7 @@ const IssuesDialog = ({
         <AlertDialogContent className="w-[95vw] max-w-lg sm:mx-auto max-h-[90vh] overflow-y-auto px-1 py-4 rounded-xl">
           <AlertDialogHeader className="space-y-3">
             <AlertDialogTitle className="text-center text-lg sm:text-xl">
-              Report an Issue 📝
+              Report an Issue
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-sm sm:text-base leading-relaxed px-2">
               Please select the relevant Order ID and describe the issue -
@@ -363,7 +364,7 @@ const IssuesDialog = ({
               <Button
                 onClick={handleSubmit}
                 disabled={!isFormValid()}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Save & Submit
               </Button>

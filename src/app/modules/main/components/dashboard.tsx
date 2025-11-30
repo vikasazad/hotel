@@ -5,7 +5,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { ArrowRight, DoorOpen, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { generateToken, handleUserCheckOut } from "../utils/mainAPI";
+import { generateToken, sendWhatsAppMessageStaff } from "../utils/mainAPI";
 import { useDispatch } from "react-redux";
 import { addData, addDiningLink } from "@/lib/features/bookingInfoSlice";
 import { AppDispatch } from "@/lib/store";
@@ -96,7 +96,12 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
   }, [dispatch, hotel, email]);
 
   const handleCheckOut = async () => {
-    await handleUserCheckOut(user, hotel?.bookingDetails?.location);
+    await sendWhatsAppMessageStaff(
+      user?.email,
+      hotel?.bookingDetails?.location,
+      `Hey! Room No-${hotel?.bookingDetails?.location} has requested for check out. Please reachout to reception to get the check out done.`,
+      ["concierge", "receptionist"]
+    );
   };
 
   return (
@@ -166,7 +171,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
           </div>
 
           <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerContent className="rounded-t-2xl bg-[#f0f0f0] ">
+            <DrawerContent className="rounded-t-2xl bg-white ">
               <DrawerDescription></DrawerDescription>
               <DrawerHeader className="text-left pb-1 pt-1">
                 <DrawerTitle className="text-md font-semibold">
@@ -191,7 +196,7 @@ const Dashboard = ({ user, hotel, info, email, tax }: any) => {
                 <Link href={info.reviewLink} target="_blank">
                   <Button
                     variant="default"
-                    className="w-full "
+                    className="w-full bg-[#ff8080] [box-shadow:var(--shadow-m)] text-white hover:bg-[#ff8080]/80"
                     onClick={() => {
                       handleCheckOut();
                     }}

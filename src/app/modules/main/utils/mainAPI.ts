@@ -364,7 +364,7 @@ async function findStaff(user: any, role: string) {
   return assignAttendantSequentially(staffMembers);
 }
 async function findStaffByRole(user: any, roles: string[]) {
-  const docRef = doc(db, user.email, "info");
+  const docRef = doc(db, user, "info");
   const docSnap = await getDoc(docRef);
   const data = docSnap.data()?.staff;
 
@@ -753,16 +753,17 @@ export const getBusinessInfo = async (email: string) => {
   return false;
 };
 
-export async function handleUserCheckOut(user: any, roomNo: string) {
+export async function sendWhatsAppMessageStaff(
+  user: any,
+  roomNo: string,
+  message: string,
+  staffRole: string[]
+) {
   try {
-    const phoneNumbers: any = await findStaffByRole(user, [
-      "attendant",
-      "receptionist",
-    ]);
+    const phoneNumbers: any = await findStaffByRole(user, staffRole);
     // console.log("phoneNumbers", phoneNumbers);
     if (phoneNumbers.length === 0) return false;
     // return phoneNumbers;
-    const message = `Hey! Room No-${roomNo} has requested for check out. Please reachout to reception to get the check out done.`;
     phoneNumbers?.forEach(async (el: StaffMember) => {
       const messageSent = await sendWhatsAppTextMessage(el.contact, message);
       if (!messageSent) {
@@ -770,7 +771,7 @@ export async function handleUserCheckOut(user: any, roomNo: string) {
       }
     });
   } catch (error) {
-    console.error("Error handling check out:", error);
+    console.error("Error sending WhatsApp message to staff:", error);
     return false;
   }
 }

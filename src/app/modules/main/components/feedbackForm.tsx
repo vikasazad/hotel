@@ -17,6 +17,7 @@ import { AppDispatch, RootState } from "@/lib/store";
 import {
   hasUserRespondedToday,
   saveSatisfactionResponse,
+  sendWhatsAppMessageStaff,
 } from "../utils/mainAPI";
 import { setPopup } from "@/lib/features/popupSlice";
 
@@ -71,6 +72,21 @@ export default function FeedbackForm({ hotelData, email }: any) {
 
   const feedback = async (response: any) => {
     console.log("Feedback Response:", response);
+    if (response.cancelled) {
+      setIssuesDialog(false);
+      return;
+    }
+    const message = `Hey! Room No-${hotelData.bookingDetails.location} has faced in issue in ${response.orderId}.
+    ${response.issueType} ${response.subIssue ? `- ${response.subIssue}` : ""}. ${response.description}.
+    Please reachout to Guest and resolve the issue as soon as possible.`;
+    console.log(message);
+    await sendWhatsAppMessageStaff(
+      email,
+      hotelData.bookingDetails.location,
+      message,
+      ["concierge", "manager"]
+    );
+
     await saveSatisfactionResponse(
       email,
       hotelData.bookingDetails.location,
