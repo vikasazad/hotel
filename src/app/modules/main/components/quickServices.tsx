@@ -291,11 +291,11 @@ export default function QuickServices({ user, requests }: any) {
         ))}
       </div>
 
-      {requests.bookingDetails?.requests &&
-        Object.keys(requests.bookingDetails?.requests)?.length > 0 && (
+      {requests?.bookingDetails?.requests &&
+        Object.keys(requests?.bookingDetails?.requests)?.length > 0 && (
           <div className="w-full space-y-4">
             <h2 className="text-xl font-bold my-4">Requests</h2>
-            {Object.values(requests.bookingDetails.requests).map(
+            {Object.values(requests?.bookingDetails?.requests).map(
               (request: any) => (
                 <div
                   key={request.id}

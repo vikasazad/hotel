@@ -96,7 +96,7 @@ const RecentOrders = ({ hotel }: any) => {
       <div className="w-full max-w-xl mx-auto  mb-12 space-y-3">
         {hotel?.diningDetails?.orders?.length > 0 ||
         hotel?.servicesUsed?.length > 0 ||
-        Object.keys(hotel?.issuesReported).length > 0 ? (
+        Object.keys(hotel?.issuesReported || {}).length > 0 ? (
           <>
             {hotel?.diningDetails?.orders?.length > 0 && (
               <h2 className="text-xl font-bold mb-4">Orders</h2>
@@ -536,11 +536,11 @@ const RecentOrders = ({ hotel }: any) => {
               </Card>
             );
           })}
-        {Object.keys(hotel?.issuesReported).length > 0 && (
+        {Object.keys(hotel?.issuesReported || {}).length > 0 && (
           <h2 className="text-xl font-bold  mb-4">Issues</h2>
         )}
         {hotel?.issuesReported &&
-          Object.values(hotel?.issuesReported).map((service: any) => {
+          Object.values(hotel?.issuesReported || {}).map((service: any) => {
             const isOpen = openIssues.includes(service.issueId);
             return (
               <Card
