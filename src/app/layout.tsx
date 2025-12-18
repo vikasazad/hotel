@@ -23,7 +23,7 @@ export default function RootLayout({
   const hideFooterRoutes = ["/login"];
   let showFooter = false;
   showFooter = !hideFooterRoutes.includes(pathname);
-  const storeRef = useRef<AppStore>();
+  const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
     storeRef.current = store();
   }
@@ -50,7 +50,7 @@ export default function RootLayout({
       <html lang="en" className={dmSans.className}>
         <body>
           <main className="[background:var(--bg-light)]">
-            <Provider store={storeRef.current}>
+            <Provider store={storeRef.current || store()}>
               {children}
               {showFooter && <Footer />}
               <FeedbackProvider />
